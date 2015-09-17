@@ -1,10 +1,10 @@
 {
-  "uuid": "133215f0-cf20-4c05-997b-3c9be5a64e5b",
-  "shortName": "Pebble.js",
-  "longName": "Pebble.js",
-  "companyName": "Meiguro",
+  "uuid": "775e3188-b4f2-4e4b-836a-e02080705ddf",
+  "shortName": "CatchOneBus",
+  "longName": "CatchOneBus",
+  "companyName": "Yaoyu Yang",
   "versionCode": 1,
-  "versionLabel": "0.4",
+  "versionLabel": "1.5",
   "capabilities": [
     "configurable"
   ],
