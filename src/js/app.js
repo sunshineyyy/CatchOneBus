@@ -563,7 +563,12 @@ var parseTimeDisplay = function(timeInSec) {
   if (timeToDisplay > 5) {
     return timeToDisplay.toFixed(0);
   } else {
-    return timeToDisplay.toFixed(1);
+    timeToDisplay = timeToDisplay.toFixed(1);
+    if (timeToDisplay.split('.')[1] === "0") {
+      return timeToDisplay.split('.')[0];
+    } else {
+      return timeToDisplay;
+    }
   }
 }
 
