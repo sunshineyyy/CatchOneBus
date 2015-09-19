@@ -31,12 +31,12 @@ function locationSuccess(position) {
   // tampa test
   // latitude = 28.0029;
   // longitude = -82.4666;
-  // boston test
-  // latitude = 42.3601;
-  // longitude = -71.0589;
-  // boston test 2
-  latitude = 42.348714;
-  longitude = -71.083212;
+  console.log("boston test");
+  latitude = 42.3601;
+  longitude = -71.0589;
+  // console.log("boston test 2");
+  // latitude = 42.348714;
+  // longitude = -71.083212;
   var currentGeoRegion = geoRegion(latitude, longitude);
   // console.log("location is " + latitude + " " + longitude + " " + currentGeoRegion);
   var url = urlStopsForLocations(latitude, longitude);
@@ -186,7 +186,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
           appSettings();
         } else if (e.item.title === "No buses") {
         } else {
-          showBusDetailPage(e);
+          showBusDetailPage(e,region);
           // Pause development for bus alert system
           // showBusTrackingPage(latitude, longitude,realTimeBusRoutes(busData).busDetails[e.itemIndex]);
         }
@@ -217,18 +217,24 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
   );
 }
 
-var showBusDetailPage = function(e) {
+var showBusDetailPage = function(e, region) {
   var detail = e.item.subtitle.split(",");
   var busDetailPage;
+  var stopNameDescription; // string for describing at which station in the detail card
+  if (arrayContains(["pugetsound", "tampa", "newyork"], region)) {
+    stopNameDescription = ', at ' + e.section.title + ' bound.';
+  } else if (arrayContains(["boston"], region)) {
+    stopNameDescription = ', at ' + e.section.title + '.';
+  }
   if (detail[1]) {
     busDetailPage = new UI.Card({
       title: e.item.title,
-      body:  detail[0] + ', to' + detail[1] + ', at ' + e.section.title + ' bound.',
+      body:  detail[0] + ', to' + detail[1] + stopNameDescription
     });
   } else {
     busDetailPage = new UI.Card({
       title: e.item.title.split(" away")[0],
-      body:  'to ' + detail[0] + ', at ' + e.section.title + ' bound.',
+      body:  'to ' + detail[0] + stopNameDescription
     });
   }
   busDetailPage.show();
@@ -583,7 +589,13 @@ var busInfo = function(data, busId) {
 
 var dataList = function(data, region) {
   if (region === "boston") {
-    return data.stop;
+    var list = [];
+    for (var i = 0; i < data.stop.length; i++) {
+      if (data.stop[i].parent_station_name.length === 0) {
+        list.push(data.stop[i]);
+      }
+    }
+    return list;
   } else {
     return data.data.list || data.data.stops;
   }
@@ -621,10 +633,6 @@ var parseFeed = function(data, region) {
       if (title.indexOf("@") > -1) {
         direction = title.substr(title.indexOf("@"));
         title = title.replace(direction, "");
-      } else if (list[i].parent_station_name.length > 0) {
-        parentStationName = list[i].parent_station_name
-        direction = title.substr(title.indexOf(parentStationName)+parentStationName.length).replace(" - ", "");
-        title = parentStationName
       }
     }
     routesName = routes.toString();
@@ -632,10 +640,12 @@ var parseFeed = function(data, region) {
       routesName = ', ' + routesName;
     }
     // Add to menu items array
-    items.push({
-      title: title,
-      subtitle: direction + routesName
-    });
+    if (title.length > 0) {
+      items.push({
+        title: title,
+        subtitle: direction + routesName
+      });
+    }
   }
 
   if (list.length === 0) {
@@ -656,11 +666,7 @@ var parseFeed = function(data, region) {
 
 var busStopIds = function(data, region) {
   var stopIds = [];
-  if (region === "boston") {
-    var list = data.stop;
-  } else {
-    var list = data.data.list || data.data.stops;
-  }
+  var list = dataList(data, region);
   for (var i = 0; i < list.length; i++) {
     stopIds.push(list[i].id||list[i].stop_id);
   }
