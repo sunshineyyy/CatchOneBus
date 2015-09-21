@@ -7,4 +7,8 @@ Public transit data powered by OneBusAway.
 * CatchOneBus will show nearby bus/transit stops, and real time arrival info for upcoming routes in the stops.
 * You can save any stop as favorite and CatchOneBus will show your favorited stop live arrival time immediately when you are near that stop and open the app. It works great if you are a daily transit commuter as you can directly enter into the app by a long click on your Pebble and real time bus info you favorited will be brought up to you.
 * You can shake your Pebble to update the information in real time!
-* Currently works in Seattle, Boston, Tampa, and New York Area.
+* Currently works for the following list of cities and areas:
+  * Seattle/Tacoma/Puget Sound Area
+  * Boston Area
+  * New York Area
+  * Tampa Area
