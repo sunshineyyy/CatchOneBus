@@ -31,9 +31,9 @@ function locationSuccess(position) {
   // tampa test
   // latitude = 28.0029;
   // longitude = -82.4666;
-  console.log("boston test");
-  latitude = 42.3601;
-  longitude = -71.0589;
+  // console.log("boston test");
+  // latitude = 42.3601;
+  // longitude = -71.0589;
   // console.log("boston test 2");
   // latitude = 42.348714;
   // longitude = -71.083212;
@@ -212,6 +212,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
       });
     },
     function(error) {
+      showNoBusPage();
       console.log('Download failed: ' + JSON.stringify(error));
     }
   );
@@ -410,6 +411,13 @@ var showAboutPage = function() {
   aboutPage.show();
 };
 
+var showNoBusPage = function() {
+  var noBusPage = new UI.Card({
+    title: "No Bus",
+    body: "No bus real time info is available for this stop."
+  });
+  noBusPage.show();
+}
 
 var deleteFavoriteStop = function(busStopId) {
   var deletePage = new UI.Menu({
