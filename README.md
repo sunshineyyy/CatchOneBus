@@ -10,5 +10,5 @@ Public transit data powered by OneBusAway.
 * Currently works for the following list of cities and areas:
   * Seattle/Tacoma/Puget Sound Area
   * Boston Area
-  * New York Area
+  * New York metropolitan area
   * Tampa Area
