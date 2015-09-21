@@ -81,6 +81,10 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
       if (showMode) {
         // Construct Menu to show to user
         var resultsMenu = new UI.Menu({
+          backgroundColor: 'white',
+          textColor: 'black',
+          highlightBackgroundColor: 'bulgarianRose',
+          highlightTextColor: 'white',
           sections: [{
             title: 'Nearby stops',
             items: menuItems
@@ -131,9 +135,6 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
   if (typeof asyncMode === 'undefined') { asyncMode = true; }
   var busStopURL = urlRoutesForStops(latitude, longitude, busStopId);
   var region = geoRegion(latitude, longitude);
-  if (busStopDirection.length > 0) {
-    busStopDirection = ", " + busStopDirection;
-  }
   console.log(busStopURL);
   ajax(
     {
@@ -145,10 +146,10 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
       var detailRoutes = new UI.Menu({
         backgroundColor: 'white',
         textColor: 'black',
-        highlightBackgroundColor: 'black',
+        highlightBackgroundColor: 'bulgarianRose',
         highlightTextColor: 'white',
         sections: [{
-          title: busStopName + busStopDirection,
+          title: busStopName + ' ' + busStopDirection,
           items: realTimeBusRoutes(busData, region).busTimeItems
         }],
       });
