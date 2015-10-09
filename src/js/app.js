@@ -447,8 +447,6 @@ var showVersionPage = function() {
   });
 }
 
-showVersionPage();
-
 var showMenuDetailPage = function(e) {
   detailPage = new UI.Card({
     title: e.item.title,
