@@ -339,6 +339,9 @@ var appSettings = function() {
   settingItems.push({
     title: "About"
   });
+  settingItems.push({
+    title: "Version"
+  });
   var settingPage = new UI.Menu({
     sections: [{ title: "Settings", items: settingItems }],
   });
@@ -352,6 +355,9 @@ var appSettings = function() {
     }
     if (e.item.title === "About") {
       showAboutPage();
+    }
+    if (e.item.title === "Version") {
+      showVersionPage();
     }
   });
 };
@@ -411,6 +417,45 @@ var showAboutPage = function() {
   });
   aboutPage.show();
 };
+
+var showVersionPage = function() {
+  var versionInfos = [{
+    title: "1.5",
+    subtitle: "Add support for Boston. Display one digit precision time for predictions under 5 minutes. Add color for Basalt application."
+  }, {
+    title: "1.4",
+    subtitle: "Now works in New York area. Add more radius options for 760-1060."
+  }, {
+    title: "1.3",
+    subtitle: "Add bus detail page where you click each bus line."
+  }, {
+    title: "1.2",
+    subtitle: "Minor updates to not show buses that have left more than 1 min ago."
+  }, {
+    title: "1.1",
+    subtitle: "Added support for Tampa area, more Settings radius options, and also added settings entry in the bus real time info page."
+  }, {
+    title: "1.0",
+    subtitle: "Check nearby bus stops, real bus timing info from each stop, able to favorite any stop, favorited stop bus real time info will be brought up at the first page if user is near that stop."
+  }];
+  var versionPage = new UI.Menu({
+    sections: [{ title: "Version Info", items: versionInfos }],
+  });
+  versionPage.show();
+  versionPage.on('select', function(e) {
+    showMenuDetailPage(e);
+  });
+}
+
+showVersionPage();
+
+var showMenuDetailPage = function(e) {
+  detailPage = new UI.Card({
+    title: e.item.title,
+    body:  e.item.subtitle
+  });
+  detailPage.show();
+}
 
 var showNoBusPage = function() {
   var noBusPage = new UI.Card({
