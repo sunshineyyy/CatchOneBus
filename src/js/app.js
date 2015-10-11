@@ -25,7 +25,7 @@ function locationError(err) {
 function locationSuccess(position) {
   var latitude = position.coords.latitude;
   var longitude = position.coords.longitude;
-  // new york test
+  // console.log("new york test");
   // latitude = 40.748433;
   // longitude = -73.985656;
   // tampa test
@@ -497,9 +497,9 @@ var realTimeBusRoutes = function(busData, region) {
   var busTimeItems = [];
   var busDetails = [];
   console.log("reach realTimeBusRoutes " + region);
+  var nowTime = parseInt(Date.now());
   if (arrayContains(["pugetsound", "tampa"], region)) {
     var arrivalsAndDepartures = busData.data.entry.arrivalsAndDepartures;
-    var nowTime = parseInt(Date.now());
     for (var i = 0; i < arrivalsAndDepartures.length; i++)  {
       // Add to busTimeItems array
       var routeShortName = arrivalsAndDepartures[i].routeShortName;
@@ -543,18 +543,25 @@ var realTimeBusRoutes = function(busData, region) {
       }
     }
   } else if (region === "newyork") {
-    console.log(JSON.stringify(busData.Siri));
+    // console.log(JSON.stringify(busData.Siri));
     var arrivalsAndDepartures = busData.Siri.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit;
-    console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0]));
-    console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit));
-    console.log(JSON.stringify(arrivalsAndDepartures));
+    // console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0]));
+    // console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit));
+    // console.log(JSON.stringify(arrivalsAndDepartures));
     for (var i = 0; i < arrivalsAndDepartures.length; i++)  {
       var monitoredInfo = arrivalsAndDepartures[i].MonitoredVehicleJourney;
       var routeShortName = monitoredInfo.PublishedLineName;
-      var predictedArrivalInfo = monitoredInfo.MonitoredCall.Extensions.Distances.PresentableDistance
-      var tripHeadsign = monitoredInfo.DestinationName
+      var predictedArrivalTime = new Date();
+      var predictedArrivalInfo = "";
+      var tripHeadsign = monitoredInfo.DestinationName;
+      if (monitoredInfo.MonitoredCall.hasOwnProperty("ExpectedArrivalTime")) {
+        predictedArrivalTime = new Date(monitoredInfo.MonitoredCall.ExpectedArrivalTime);
+        predictedArrivalInfo = ', in ' + parseTimeDisplay((predictedArrivalTime.getTime() - nowTime)/1000) + ' min';
+      } else {
+        predictedArrivalInfo = ', ' + monitoredInfo.MonitoredCall.Extensions.Distances.PresentableDistance;
+      }
       busTimeItems.push({
-        title: routeShortName + ', ' + predictedArrivalInfo,
+        title: routeShortName + predictedArrivalInfo,
         subtitle: tripHeadsign
       });
     }
