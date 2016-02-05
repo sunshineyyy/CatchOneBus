@@ -28,7 +28,7 @@ function locationSuccess(position) {
   // console.log("new york test");
   // latitude = 40.748433;
   // longitude = -73.985656;
-  // tampa test
+  // console.log("tampa test");
   // latitude = 28.0029;
   // longitude = -82.4666;
   // console.log("boston test");
@@ -420,6 +420,9 @@ var showAboutPage = function() {
 
 var showVersionPage = function() {
   var versionInfos = [{
+    title: "1.6",
+    subtitle: "Time prediction instead of distance for New York where data is available. Add version page. Fix bug in Boston when API provides no info."
+  }, {
     title: "1.5",
     subtitle: "Add support for Boston. Display one digit precision time for predictions under 5 minutes. Add color for Basalt application."
   }, {
@@ -450,7 +453,9 @@ var showVersionPage = function() {
 var showMenuDetailPage = function(e) {
   detailPage = new UI.Card({
     title: e.item.title,
-    body:  e.item.subtitle
+    body:  e.item.subtitle,
+    scrollable: true,
+    style: 'small'
   });
   detailPage.show();
 }
@@ -566,7 +571,7 @@ var realTimeBusRoutes = function(busData, region) {
       });
     }
   } else if (region === "boston") {
-    for (var i = 0; i < busData.mode.length; i++) {
+    for (var i = 0; i < (busData.mode || []).length; i++) {
       var mode = busData.mode[i];
       for (var j = 0; j < mode.route.length; j++) {
         var route = mode.route[j];
