@@ -1,45 +1,45 @@
 {
-  "uuid": "775e3188-b4f2-4e4b-836a-e02080705ddf",
-  "shortName": "CatchOneBus",
-  "longName": "CatchOneBus",
-  "companyName": "Yaoyu Yang",
-  "versionCode": 1,
-  "versionLabel": "1.6",
+  "appKeys": {},
   "capabilities": [
     "configurable"
   ],
-  "watchapp": {
-    "watchface": false
-  },
-  "appKeys": {},
+  "companyName": "Yaoyu Yang",
+  "longName": "CatchOneBus",
   "resources": {
     "media": [
       {
+        "file": "images/menu_icon.png",
         "menuIcon": true,
-        "type": "png",
         "name": "IMAGE_MENU_ICON",
-        "file": "images/menu_icon.png"
+        "type": "png"
       },
       {
-        "type": "png",
+        "file": "images/logo_splash.png",
         "name": "IMAGE_LOGO_SPLASH",
-        "file": "images/logo_splash.png"
+        "type": "png"
       },
       {
-        "type": "png",
+        "file": "images/tile_splash.png",
         "name": "IMAGE_TILE_SPLASH",
-        "file": "images/tile_splash.png"
+        "type": "png"
       },
       {
-        "type": "font",
+        "file": "fonts/UbuntuMono-Regular.ttf",
         "name": "MONO_FONT_14",
-        "file": "fonts/UbuntuMono-Regular.ttf"
+        "type": "font"
       }
     ]
   },
+  "sdkVersion": "3",
+  "shortName": "CatchOneBus",
   "targetPlatforms": [
     "aplite",
     "basalt"
   ],
-  "sdkVersion": "3"
+  "uuid": "775e3188-b4f2-4e4b-836a-e02080705ddf",
+  "versionCode": 1,
+  "versionLabel": "1.6",
+  "watchapp": {
+    "watchface": false
+  }
 }

@@ -1,15 +1,12 @@
 #pragma once
 
-#ifdef PBL_SDK_3
-#include "basalt/src/resource_ids.auto.h"
-#endif
-
 #define LOG(...) APP_LOG(APP_LOG_LEVEL_DEBUG, __VA_ARGS__)
 
 typedef struct Simply Simply;
 
 struct Simply {
   struct SimplyAccel *accel;
+  struct SimplyVoice *voice;
   struct SimplyRes *res;
   struct SimplyMsg *msg;
   struct SimplyWindowStack *window_stack;

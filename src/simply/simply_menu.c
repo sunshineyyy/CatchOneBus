@@ -9,13 +9,14 @@
 #include "util/color.h"
 #include "util/graphics.h"
 #include "util/menu_layer.h"
+#include "util/platform.h"
 #include "util/string.h"
 
 #include <pebble.h>
 
 #define MAX_CACHED_SECTIONS 10
 
-#define MAX_CACHED_ITEMS 51
+#define MAX_CACHED_ITEMS IF_APLITE_ELSE(6, 51)
 
 static const time_t SPINNER_MS = 66;
 
@@ -45,6 +46,8 @@ struct __attribute__((__packed__)) MenuSectionPacket {
   Packet packet;
   uint16_t section;
   uint16_t num_items;
+  GColor8 background_color;
+  GColor8 text_color;  
   uint16_t title_length;
   char title[];
 };
@@ -339,10 +342,14 @@ static void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, ui
   list1_prepend(&self->menu_layer.sections, &section->node);
 
   GRect bounds = layer_get_bounds(cell_layer);
+
+  graphics_context_set_fill_color(ctx, gcolor8_get_or(section->title_background, GColorWhite));
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+
   bounds.origin.x += 2;
   bounds.origin.y -= 1;
 
-  graphics_context_set_text_color(ctx, gcolor8_get_or(self->menu_layer.normal_foreground, GColorBlack));
+  graphics_context_set_text_color(ctx, gcolor8_get_or(section->title_foreground, GColorBlack));
   graphics_draw_text(ctx, section->title, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD),
                      bounds, GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
 }
@@ -550,6 +557,8 @@ static void handle_menu_section_packet(Simply *simply, Packet *data) {
   *section = (SimplyMenuSection) {
     .section = packet->section,
     .num_items = packet->num_items,
+    .title_foreground = packet->text_color,
+    .title_background = packet->background_color,
     .title = packet->title_length ? strdup2(packet->title) : NULL,
   };
   simply_menu_add_section(simply->menu, section);
