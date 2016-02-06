@@ -76,6 +76,12 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
     function(data) {
       // Create an array of Menu items
       var menuItems = parseFeed(data,region);
+      var favoriteData = Settings.data()["favorite_list"] || [];
+      if (favoriteData.length > 0) {
+        menuItems.unshift({
+          title: "Favorite stops"
+        })
+      }
       stopIdList = busStopIds(data,region);
       console.log("Bus stop list " + url);
       if (showMode) {
@@ -99,6 +105,8 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
         resultsMenu.on('select', function(e) {
           if (e.item.title === "Settings") {
             appSettings();
+          } else if (e.item.title === "Favorite stops") {
+            showFavoriteStops(latitude,longitude);
           } else {
             var list = dataList(data, region);
             var busStopName = e.item.title;
@@ -362,7 +370,7 @@ var appSettings = function() {
   });
 };
 
-var showFavoriteStops = function() {
+var showFavoriteStops = function(latitude, longitude) {
   var favoriteStopList = [];
   var favoriteStopListData = Settings.data()["favorite_list"];
   for (var i = 0; i < favoriteStopListData.length; i ++) {
@@ -376,8 +384,12 @@ var showFavoriteStops = function() {
   });
   favoriteStopsPage.show();
   favoriteStopsPage.on('select', function(e) {
-    deleteFavoriteStop(favoriteStopListData[e.itemIndex].stopId);
-    favoriteStopsPage.hide();
+    if (typeof latitude === 'undefined') {
+      deleteFavoriteStop(favoriteStopListData[e.itemIndex].stopId);
+    } else {
+      showBusRoutesMenu(favoriteStopListData[e.itemIndex].stopId, favoriteStopListData[e.itemIndex].name, favoriteStopListData[e.itemIndex].direction, latitude, longitude);
+    }
+    // favoriteStopsPage.hide();
   });
 };
 
@@ -420,6 +432,9 @@ var showAboutPage = function() {
 
 var showVersionPage = function() {
   var versionInfos = [{
+    title: "1.7",
+    subtitle: "Access to favorite stop real time bus info."
+  }, {
     title: "1.6",
     subtitle: "Time prediction instead of distance for New York where data is available. Add version page. Fix bug in Boston when API provides no info."
   }, {
