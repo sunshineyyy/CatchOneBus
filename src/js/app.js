@@ -25,6 +25,9 @@ function locationError(err) {
 function locationSuccess(position) {
   var latitude = position.coords.latitude;
   var longitude = position.coords.longitude;
+  // console.log("Seattle test");
+  // latitude = 47.616215;
+  // longitude = -122.332792;
   // console.log("new york test");
   // latitude = 40.748433;
   // longitude = -73.985656;
@@ -124,7 +127,13 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
             },
             function(data) {
               // Update the Menu's first section
-              resultsMenu.items(0, parseFeed(data,region));
+              menuItems = parseFeed(data,region);
+              if (favoriteData.length > 0) {
+                menuItems.unshift({
+                  title: "Favorite stops"
+                })
+              }
+              resultsMenu.items(0, menuItems);
               console.log(JSON.stringify(parseFeed(data,region)));
             },
             function(error) {
