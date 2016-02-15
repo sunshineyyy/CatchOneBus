@@ -9,14 +9,13 @@
 #include "util/compat.h"
 #include "util/color.h"
 #include "util/graphics.h"
+#include "util/graphics_text.h"
 #include "util/math.h"
 #include "util/noop.h"
 #include "util/string.h"
 #include "util/window.h"
 
 #include <pebble.h>
-
-#define TEXT_FLOW_INSET 8
 
 struct __attribute__((__packed__)) SimplyStyle {
   const char *title_font;
@@ -157,9 +156,8 @@ void simply_ui_set_text_color(SimplyUi *self, SimplyUiTextfieldId textfield_id, 
 
 static void enable_text_flow_and_paging(SimplyUi *self, GTextAttributes *text_attributes,
                                         const GRect *box) {
-  graphics_text_attributes_enable_screen_text_flow(text_attributes, TEXT_FLOW_INSET);
-  graphics_text_attributes_enable_paging(
-      text_attributes, box->origin, layer_get_bounds((Layer *)self->window.scroll_layer));
+  graphics_text_attributes_enable_paging_on_layer(
+      text_attributes, (Layer *)self->window.scroll_layer, box, TEXT_FLOW_DEFAULT_INSET);
 }
 
 static void layer_update_callback(Layer *layer, GContext *ctx) {
@@ -190,7 +188,7 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
   GPoint cursor = { margin_x, margin_y };
 
   if (self->window.use_action_bar) {
-    text_frame.size.w -= ACTION_BAR_WIDTH + PBL_IF_ROUND_ELSE(TEXT_FLOW_INSET, 0);
+    text_frame.size.w -= ACTION_BAR_WIDTH + PBL_IF_ROUND_ELSE(TEXT_FLOW_DEFAULT_INSET, 0);
     window_frame.size.w -= ACTION_BAR_WIDTH;
   }
 
@@ -289,6 +287,7 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
         enable_text_flow_and_paging(self, body_attributes, &body_rect), NOOP);
     GSize body_size = graphics_text_layout_get_content_size_with_attributes(
         body->text, body_font, body_rect, GTextOverflowModeWordWrap, text_align, body_attributes);
+    body_size.w = body_rect.size.w;
     if (self->window.is_scrollable) {
       body_rect.size = body_size;
       int16_t new_height = cursor.y + 2 * margin_y + body_size.h;
