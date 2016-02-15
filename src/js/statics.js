@@ -43,6 +43,9 @@ Statics.aboutPage = new UI.Card({
 
 Statics.showVersionPage = function() {
   var versionInfos = [{
+    title: "1.8",
+    subtitle: "New welcome page, fix bugs in version 1.71 and 1.72."
+  }, {
     title: "1.7",
     subtitle: "Access to favorite stop real time bus info."
   }, {
