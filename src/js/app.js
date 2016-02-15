@@ -5,14 +5,9 @@ var Accel = require('ui/accel');
 var Vibe = require('ui/vibe');
 var Settings = require('settings');
 var KEY = require('key');
+var Statics = require('statics')
 
-// Create a nice waiting card for user while waiting
-var splashWindow = new UI.Card({
-  title: 'CatchOneBus!',
-  body: "We are fetching nearby bus stop info for you!"
-});
-
-splashWindow.show();
+Statics.welcomeWindow.show()
 
 // Request location
 navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
@@ -102,7 +97,7 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
 
         // Show the Menu, hide the splash
         resultsMenu.show();
-        splashWindow.hide();
+        Statics.welcomeWindow.hide();
 
         // Add an action for SELECT
         resultsMenu.on('select', function(e) {
@@ -111,10 +106,11 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
           } else if (e.item.title === "Favorite stops") {
             showFavoriteStops(latitude,longitude);
           } else {
-            var list = dataList(data, region);
-            var busStopName = e.item.title;
+            var busStopNameAndId = e.item.title.split(",")
+            var busStopName = busStopNameAndId[busStopNameAndId.length-2];
+            var busStopId = busStopNameAndId[busStopNameAndId.length-1]
             var busStopDirection = e.item.subtitle.split(",")[0];
-            showBusRoutesMenu(list[e.itemIndex].id||list[e.itemIndex].stop_id, busStopName, busStopDirection, latitude, longitude);
+            showBusRoutesMenu(busStopId, busStopName, busStopDirection, latitude, longitude);
           }
         }); // end resultsMenu.on
 
@@ -172,7 +168,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
       });
 
       detailRoutes.show();
-      splashWindow.hide();
+      Statics.welcomeWindow.hide();
 
       // Add an action for select save as favorite
       detailRoutes.on('select', function(e) {
@@ -325,7 +321,7 @@ var favoriteConfirmPage = function(busStopId, busStopName, busStopDirection) {
   var favoriteItems = [];
   favoriteItems.push({
     title: busStopName,
-    subtitle: busStopDirection + ", saved as favorite."
+    subtitle: busStopDirection + ", Stop_ID " + busStopId
   });
   favoriteItems.push({
     title: "Favorite stops",
@@ -371,10 +367,10 @@ var appSettings = function() {
       showRadiusSettings();
     }
     if (e.item.title === "About") {
-      showAboutPage();
+      Statics.aboutPage.show();
     }
     if (e.item.title === "Version") {
-      showVersionPage();
+      Statics.showVersionPage();
     }
   });
 };
@@ -385,7 +381,7 @@ var showFavoriteStops = function(latitude, longitude) {
   for (var i = 0; i < favoriteStopListData.length; i ++) {
     favoriteStopList.push({
       title: favoriteStopListData[i].name,
-      subtitle: favoriteStopListData[i].direction  + " bound"
+      subtitle: favoriteStopListData[i].direction + ", Stop_ID " + favoriteStopListData[i].stopId
     });
   }
   var favoriteStopsPage = new UI.Menu({
@@ -428,15 +424,6 @@ var showRadiusSettings = function() {
     searchRadiusConfirm.show();
     radiusSettings.hide();
   });
-};
-
-var showAboutPage = function() {
-  var aboutPage = new UI.Card({
-    title: "CatchOneBus",
-    body: "CatchOneBus is aimed to check your transit by a simple click on your wrist, app developed by Yaoyu Yang, logo by Dian Zhang. If you enjoy the app, please give us a like! Any feedbacks are welcome!",
-    scrollable: true
-  });
-  aboutPage.show();
 };
 
 var showVersionPage = function() {
@@ -700,6 +687,8 @@ var parseFeed = function(data, region) {
   for (var i = 0; i < list.length; i++) {
     // Always upper case the description string
     var title = list[i].name || list[i].stop_name;
+    var busStopId = list[i].id||list[i].stop_id
+    title = title + ',' + busStopId
     var direction = list[i].direction || "";
     var routes = [];
     var routesName = "";
