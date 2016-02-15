@@ -5,14 +5,10 @@ var Accel = require('ui/accel');
 var Vibe = require('ui/vibe');
 var Settings = require('settings');
 var KEY = require('key');
+var Statics = require('statics')
+var Version = require('version')
 
-// Create a nice waiting card for user while waiting
-var splashWindow = new UI.Card({
-  title: 'CatchOneBus!',
-  body: "We are fetching nearby bus stop info for you!"
-});
-
-splashWindow.show();
+Statics.welcomeWindow.show()
 
 // Request location
 navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
@@ -100,9 +96,9 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
           }]
         });
 
-        // Show the Menu, hide the splash
+        // Show the Menu, hide the welcome
         resultsMenu.show();
-        splashWindow.hide();
+        Statics.welcomeWindow.hide();
 
         // Add an action for SELECT
         resultsMenu.on('select', function(e) {
@@ -111,10 +107,12 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
           } else if (e.item.title === "Favorite stops") {
             showFavoriteStops(latitude,longitude);
           } else {
-            var list = dataList(data, region);
-            var busStopName = e.item.title;
+            // var list = dataList(data, region);
+            var busStopNameAndId = e.item.title.split(",")
+            var busStopName = busStopNameAndId[busStopNameAndId.length-2];
+            var busStopId = busStopNameAndId[busStopNameAndId.length-1]
             var busStopDirection = e.item.subtitle.split(",")[0];
-            showBusRoutesMenu(list[e.itemIndex].id||list[e.itemIndex].stop_id, busStopName, busStopDirection, latitude, longitude);
+            showBusRoutesMenu(busStopId, busStopName, busStopDirection, latitude, longitude);
           }
         }); // end resultsMenu.on
 
@@ -172,7 +170,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
       });
 
       detailRoutes.show();
-      splashWindow.hide();
+      Statics.welcomeWindow.hide();
 
       // Add an action for select save as favorite
       detailRoutes.on('select', function(e) {
@@ -325,7 +323,7 @@ var favoriteConfirmPage = function(busStopId, busStopName, busStopDirection) {
   var favoriteItems = [];
   favoriteItems.push({
     title: busStopName,
-    subtitle: busStopDirection + ", saved as favorite."
+    subtitle: busStopDirection + ", Stop_ID: " + busStopId
   });
   favoriteItems.push({
     title: "Favorite stops",
@@ -371,10 +369,10 @@ var appSettings = function() {
       showRadiusSettings();
     }
     if (e.item.title === "About") {
-      showAboutPage();
+      Version.showAboutPage();
     }
     if (e.item.title === "Version") {
-      showVersionPage();
+      Version.showVersionPage();
     }
   });
 };
@@ -385,7 +383,7 @@ var showFavoriteStops = function(latitude, longitude) {
   for (var i = 0; i < favoriteStopListData.length; i ++) {
     favoriteStopList.push({
       title: favoriteStopListData[i].name,
-      subtitle: favoriteStopListData[i].direction  + " bound"
+      subtitle: favoriteStopListData[i].direction  + ", Stop_ID: " +favoriteStopListData[i].stopId
     });
   }
   var favoriteStopsPage = new UI.Menu({
@@ -430,59 +428,6 @@ var showRadiusSettings = function() {
   });
 };
 
-var showAboutPage = function() {
-  var aboutPage = new UI.Card({
-    title: "CatchOneBus",
-    body: "CatchOneBus is aimed to check your transit by a simple click on your wrist, app developed by Yaoyu Yang, logo by Dian Zhang. If you enjoy the app, please give us a like! Any feedbacks are welcome!",
-    scrollable: true
-  });
-  aboutPage.show();
-};
-
-var showVersionPage = function() {
-  var versionInfos = [{
-    title: "1.7",
-    subtitle: "Access to favorite stop real time bus info."
-  }, {
-    title: "1.6",
-    subtitle: "Time prediction instead of distance for New York where data is available. Add version page. Fix bug in Boston when API provides no info."
-  }, {
-    title: "1.5",
-    subtitle: "Add support for Boston. Display one digit precision time for predictions under 5 minutes. Add color for Basalt application."
-  }, {
-    title: "1.4",
-    subtitle: "Now works in New York area. Add more radius options for 760-1060."
-  }, {
-    title: "1.3",
-    subtitle: "Add bus detail page where you click each bus line."
-  }, {
-    title: "1.2",
-    subtitle: "Minor updates to not show buses that have left more than 1 min ago."
-  }, {
-    title: "1.1",
-    subtitle: "Added support for Tampa area, more Settings radius options, and also added settings entry in the bus real time info page."
-  }, {
-    title: "1.0",
-    subtitle: "Check nearby bus stops, real bus timing info from each stop, able to favorite any stop, favorited stop bus real time info will be brought up at the first page if user is near that stop."
-  }];
-  var versionPage = new UI.Menu({
-    sections: [{ title: "Version Info", items: versionInfos }],
-  });
-  versionPage.show();
-  versionPage.on('select', function(e) {
-    showMenuDetailPage(e);
-  });
-}
-
-var showMenuDetailPage = function(e) {
-  detailPage = new UI.Card({
-    title: e.item.title,
-    body:  e.item.subtitle,
-    scrollable: true,
-    style: 'small'
-  });
-  detailPage.show();
-}
 
 var showNoBusPage = function() {
   var noBusPage = new UI.Card({
@@ -700,6 +645,8 @@ var parseFeed = function(data, region) {
   for (var i = 0; i < list.length; i++) {
     // Always upper case the description string
     var title = list[i].name || list[i].stop_name;
+    var bus_id = list[i].id||list[i].stop_id
+    title = title + ',' + bus_id
     var direction = list[i].direction || "";
     var routes = [];
     var routesName = "";
