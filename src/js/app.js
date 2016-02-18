@@ -7,6 +7,20 @@ var Settings = require('settings');
 var KEY = require('key');
 var Statics = require('statics')
 
+// Set a configurable with the open callback
+Settings.config(
+  { url: 'http://www.yaoyuyang.com' },
+  function(e) {
+    console.log('opening configurable');
+
+    // // Reset color to red before opening the webview
+    // Settings.option('color', 'red');
+  },
+  function(e) {
+    console.log('closed configurable');
+  }
+);
+
 Statics.welcomeWindow.show()
 
 // Request location
