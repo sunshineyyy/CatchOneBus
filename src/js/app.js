@@ -9,7 +9,7 @@ var Statics = require('statics')
 
 // Set a configurable with the open callback
 Settings.config(
-  { url: 'http://www.yaoyuyang.com' },
+  { url: 'http://www.yaoyuyang.com/catchonebus/config/' },
   function(e) {
     console.log('opening configurable');
 
