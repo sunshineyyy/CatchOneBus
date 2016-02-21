@@ -5,23 +5,21 @@ var Accel = require('ui/accel');
 var Vibe = require('ui/vibe');
 var Settings = require('settings');
 var KEY = require('key');
-var Statics = require('statics')
+var Statics = require('statics');
+var Tests = require('tests');
 
 // Set a configurable with the open callback
 Settings.config(
   { url: 'http://www.yaoyuyang.com/catchonebus/config/' },
   function(e) {
     console.log('opening configurable');
-
-    // // Reset color to red before opening the webview
-    // Settings.option('color', 'red');
   },
   function(e) {
     console.log('closed configurable');
   }
 );
 
-Statics.welcomeWindow.show()
+Statics.welcomeWindow.show();
 
 // Request location
 navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
@@ -34,6 +32,8 @@ function locationError(err) {
 function locationSuccess(position) {
   var latitude = position.coords.latitude;
   var longitude = position.coords.longitude;
+  // latitude = Tests.cases['Seattle test'][0];
+  // longitude = Tests.cases['Seattle test'][1];
   // console.log("Seattle test");
   // latitude = 47.616215;
   // longitude = -122.332792;
@@ -440,51 +440,6 @@ var showRadiusSettings = function() {
   });
 };
 
-var showVersionPage = function() {
-  var versionInfos = [{
-    title: "1.7",
-    subtitle: "Access to favorite stop real time bus info."
-  }, {
-    title: "1.6",
-    subtitle: "Time prediction instead of distance for New York where data is available. Add version page. Fix bug in Boston when API provides no info."
-  }, {
-    title: "1.5",
-    subtitle: "Add support for Boston. Display one digit precision time for predictions under 5 minutes. Add color for Basalt application."
-  }, {
-    title: "1.4",
-    subtitle: "Now works in New York area. Add more radius options for 760-1060."
-  }, {
-    title: "1.3",
-    subtitle: "Add bus detail page where you click each bus line."
-  }, {
-    title: "1.2",
-    subtitle: "Minor updates to not show buses that have left more than 1 min ago."
-  }, {
-    title: "1.1",
-    subtitle: "Added support for Tampa area, more Settings radius options, and also added settings entry in the bus real time info page."
-  }, {
-    title: "1.0",
-    subtitle: "Check nearby bus stops, real bus timing info from each stop, able to favorite any stop, favorited stop bus real time info will be brought up at the first page if user is near that stop."
-  }];
-  var versionPage = new UI.Menu({
-    sections: [{ title: "Version Info", items: versionInfos }],
-  });
-  versionPage.show();
-  versionPage.on('select', function(e) {
-    showMenuDetailPage(e);
-  });
-}
-
-var showMenuDetailPage = function(e) {
-  detailPage = new UI.Card({
-    title: e.item.title,
-    body:  e.item.subtitle,
-    scrollable: true,
-    style: 'small'
-  });
-  detailPage.show();
-}
-
 var showNoBusPage = function() {
   var noBusPage = new UI.Card({
     title: "No Bus",
@@ -808,16 +763,6 @@ var urlBus = function(type, region) {
   }
   return "http://" + urlSource[type][region]
 }
-
-// var apiKey = function(region) {
-//   key = {
-//     "pugetsound" : KEY_PUGET_SOUND,
-//     "newyork": KEY_NEW_YORK,
-//     "tampa": KEY_TAMPA,
-//     "boston": KEY_BOSTON
-//   }
-//   return key[region]
-// }
 
 var urlBusPugetSound = "http://api.pugetsound.onebusaway.org/api/where/arrival-and-departure-for-stop/";
 var urlBusTampa = "http://api.tampa.onebusaway.org/api/where/arrival-and-departure-for-stop/";
