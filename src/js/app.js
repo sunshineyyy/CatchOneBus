@@ -7,6 +7,8 @@ var Settings = require('settings');
 var KEY = require('key');
 var Statics = require('statics');
 var Tests = require('tests');
+var Locations = require('locations');
+var Helper = require('helper');
 
 // Set a configurable with the open callback
 Settings.config(
@@ -32,6 +34,10 @@ function locationError(err) {
 function locationSuccess(position) {
   var latitude = position.coords.latitude;
   var longitude = position.coords.longitude;
+  var coords = {
+    "lat": position.coords.latitude,
+    "lon": position.coords.longitude
+  }
   // latitude = Tests.cases['Seattle test'][0];
   // longitude = Tests.cases['Seattle test'][1];
   // console.log("Seattle test");
@@ -49,36 +55,40 @@ function locationSuccess(position) {
   // console.log("boston test 2");
   // latitude = 42.348714;
   // longitude = -71.083212;
-  var currentGeoRegion = geoRegion(latitude, longitude);
+  var currentGeoRegion = Locations.geoRegion(coords);
+  console.log(currentGeoRegion);
   // console.log("location is " + latitude + " " + longitude + " " + currentGeoRegion);
+  var url_new = Locations.urlStops(coords);
+  console.log('url_new success ' + url_new);
   var url = urlStopsForLocations(latitude, longitude);
-  var currentStopIds = showStopListMenu(latitude, longitude, false, false);
+  var currentStopIds = showStopListMenu(coords, false, false);
   console.log("currentStopIds, " + currentStopIds);
   // Check if any favorite locations is nearby
   var favoriteData = Settings.data()["favorite_list"] || [];
   var favoritePageToShow = false;
   for (var i = 0; i < favoriteData.length; i++) {
-    console.log(favoriteData[i].stopId);
+    console.log( i + "th favorite stop id is " + favoriteData[i].stopId);
     if (arrayContains(currentStopIds, favoriteData[i].stopId)) {
-      console.log("favorite stop id is " + favoriteData[i].stopId);
-      showBusRoutesMenu(favoriteData[i].stopId, favoriteData[i].name, favoriteData[i].direction, latitude, longitude);
+      console.log("matched favorite stop id is " + favoriteData[i].stopId);
+      showBusRoutesMenu(favoriteData[i].stopId, favoriteData[i].name, favoriteData[i].direction, coords);
       favoritePageToShow = true;
     }
   }
   if (!favoritePageToShow) {
-    showStopListMenu(latitude, longitude);
+    showStopListMenu(coords);
   }
 }
 
 // Prepare the accelerometer
 Accel.init();
 
-var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
-  var url = urlStopsForLocations(latitude, longitude);
-  var region = geoRegion(latitude, longitude);
+var showStopListMenu = function(coords,asyncMode,showMode) {
+  var url = Locations.urlStops(coords);
+  var region = Locations.geoRegion(coords);
   var stopIdList = [];
   if (typeof asyncMode === 'undefined') { asyncMode = true ; }
   if (typeof showMode === 'undefined') { showMode = true ; }
+  console.log('asyncMode is ' + asyncMode)
   ajax(
     {
       url: url,
@@ -118,13 +128,13 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
           if (e.item.title === "Settings") {
             appSettings();
           } else if (e.item.title === "Favorite stops") {
-            showFavoriteStops(latitude,longitude);
+            showFavoriteStops(coords);
           } else {
             var busStopNameAndId = e.item.title.split(",")
             var busStopName = busStopNameAndId[busStopNameAndId.length-2];
             var busStopId = busStopNameAndId[busStopNameAndId.length-1]
             var busStopDirection = e.item.subtitle.split(",")[0];
-            showBusRoutesMenu(busStopId, busStopName, busStopDirection, latitude, longitude);
+            showBusRoutesMenu(busStopId, busStopName, busStopDirection, coords);
           }
         }); // end resultsMenu.on
 
@@ -157,11 +167,11 @@ var showStopListMenu = function(latitude,longitude,asyncMode,showMode) {
   return stopIdList;
 };
 
-var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latitude, longitude, asyncMode) {
+var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, coords, asyncMode) {
   // show bus routes for a given stop id
   if (typeof asyncMode === 'undefined') { asyncMode = true; }
-  var busStopURL = urlRoutesForStops(latitude, longitude, busStopId);
-  var region = geoRegion(latitude, longitude);
+  var busStopURL = Locations.urlRoutesForStops(coords, busStopId);
+  var region = Locations.geoRegion(coords);
   console.log(busStopURL);
   ajax(
     {
@@ -209,7 +219,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, latit
           Settings.data("favorite_list", stopList);
           console.log(JSON.stringify(Settings.data()));
         } else if (e.item.title === "Nearby stop list") {
-          showStopListMenu(latitude,longitude);
+          showStopListMenu(coords);
         } else if (e.item.title === "Settings") {
           appSettings();
         } else if (e.item.title === "No buses") {
@@ -389,7 +399,7 @@ var appSettings = function() {
   });
 };
 
-var showFavoriteStops = function(latitude, longitude) {
+var showFavoriteStops = function(coords) {
   var favoriteStopList = [];
   var favoriteStopListData = Settings.data()["favorite_list"];
   for (var i = 0; i < favoriteStopListData.length; i ++) {
@@ -403,10 +413,10 @@ var showFavoriteStops = function(latitude, longitude) {
   });
   favoriteStopsPage.show();
   favoriteStopsPage.on('select', function(e) {
-    if (typeof latitude === 'undefined') {
+    if (typeof coords === 'undefined') {
       deleteFavoriteStop(favoriteStopListData[e.itemIndex].stopId);
     } else {
-      showBusRoutesMenu(favoriteStopListData[e.itemIndex].stopId, favoriteStopListData[e.itemIndex].name, favoriteStopListData[e.itemIndex].direction, latitude, longitude);
+      showBusRoutesMenu(favoriteStopListData[e.itemIndex].stopId, favoriteStopListData[e.itemIndex].name, favoriteStopListData[e.itemIndex].direction, coords);
     }
     // favoriteStopsPage.hide();
   });
