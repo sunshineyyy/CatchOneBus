@@ -32,35 +32,19 @@ function locationError(err) {
 
 // When location request succeeds
 function locationSuccess(position) {
-  var latitude = position.coords.latitude;
-  var longitude = position.coords.longitude;
   var coords = {
     "lat": position.coords.latitude,
     "lon": position.coords.longitude
   }
-  // latitude = Tests.cases['Seattle test'][0];
-  // longitude = Tests.cases['Seattle test'][1];
-  // console.log("Seattle test");
-  // latitude = 47.616215;
-  // longitude = -122.332792;
-  // console.log("new york test");
-  // latitude = 40.748433;
-  // longitude = -73.985656;
-  // console.log("tampa test");
-  // latitude = 28.0029;
-  // longitude = -82.4666;
-  // console.log("boston test");
-  // latitude = 42.3601;
-  // longitude = -71.0589;
-  // console.log("boston test 2");
-  // latitude = 42.348714;
-  // longitude = -71.083212;
+  // coords = Tests.cases['Boston test 2'];
+  // coords = Tests.cases['Seattle'];
+  // coords = Tests.cases['New York'];
+  // coords = Tests.cases['Tampa'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   // console.log("location is " + latitude + " " + longitude + " " + currentGeoRegion);
   var url_new = Locations.urlStops(coords);
   console.log('url_new success ' + url_new);
-  var url = urlStopsForLocations(latitude, longitude);
   var currentStopIds = showStopListMenu(coords, false, false);
   console.log("currentStopIds, " + currentStopIds);
   // Check if any favorite locations is nearby
@@ -97,7 +81,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
     },
     function(data) {
       // Create an array of Menu items
-      var menuItems = parseFeed(data,region);
+      var menuItems = parseStopListData(data,region);
       var favoriteData = Settings.data()["favorite_list"] || [];
       if (favoriteData.length > 0) {
         menuItems.unshift({
@@ -130,10 +114,10 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
           } else if (e.item.title === "Favorite stops") {
             showFavoriteStops(coords);
           } else {
-            var busStopNameAndId = e.item.title.split(",")
-            var busStopName = busStopNameAndId[busStopNameAndId.length-2];
-            var busStopId = busStopNameAndId[busStopNameAndId.length-1]
-            var busStopDirection = e.item.subtitle.split(",")[0];
+            console.log(JSON.stringify(menuItems[e.itemIndex]));
+            var busStopName = menuItems[e.itemIndex].stopName;
+            var busStopId = menuItems[e.itemIndex].busStopId;
+            var busStopDirection = menuItems[e.itemIndex].busStopdirection;
             showBusRoutesMenu(busStopId, busStopName, busStopDirection, coords);
           }
         }); // end resultsMenu.on
@@ -147,14 +131,14 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
             },
             function(data) {
               // Update the Menu's first section
-              menuItems = parseFeed(data,region);
+              menuItems = topListData(data,region);
               if (favoriteData.length > 0) {
                 menuItems.unshift({
                   title: "Favorite stops"
                 })
               }
               resultsMenu.items(0, menuItems);
-              console.log(JSON.stringify(parseFeed(data,region)));
+              console.log(JSON.stringify(parseStopListData(data,region)));
             },
             function(error) {
               console.log('Download failed: ' + error);
@@ -656,19 +640,28 @@ var dataList = function(data, region) {
     }
     return list;
   } else {
-    return data.data.list || data.data.stops;
+    if (data.data) {
+      return data.data.list || data.data.stops;
+      console.log('data.data is available.')
+    } else {
+      return [];
+      console.log('data.data not available.')
+    }
   }
 }
 
-var parseFeed = function(data, region) {
+var parseStopListData = function(data, region) {
   var items = [];
   var list = dataList(data, region);
+  console.log('list length is ' + list.length);
   for (var i = 0; i < list.length; i++) {
     // Always upper case the description string
     var title = list[i].name || list[i].stop_name;
-    var busStopId = list[i].id||list[i].stop_id
-    title = title + ',' + busStopId
+    var stopName = list[i].name || list[i].stop_name;
+    console.log("");
+    var busStopId = list[i].id||list[i].stop_id;
     var direction = list[i].direction || "";
+    var real_direction = list[i].direction || "";
     var routes = [];
     var routesName = "";
     var parentStationName = ""
@@ -704,12 +697,17 @@ var parseFeed = function(data, region) {
     if (title.length > 0) {
       items.push({
         title: title,
-        subtitle: direction + routesName
+        subtitle: direction + routesName,
+        busStopId: busStopId,
+        stopName: stopName,
+        busStopdirection: real_direction
       });
+    } else {
+      console.log('title is blank');
     }
   }
 
-  if (list.length === 0) {
+  if (items.length === 0) {
     items = [{
       title: "No Bus Stop Around",
       subtitle: "No bus stop in 260 m radius."
@@ -735,73 +733,8 @@ var busStopIds = function(data, region) {
   return stopIds;
 }
 
-// geoRegion based on latitude and longitude
-var geoRegion = function(latitude,longitude) {
-  if (latitude > 45 && latitude < 49 && longitude > -124 && longitude < -120) {
-    return "pugetsound";
-  } else if (latitude > 40 && latitude < 41 && longitude > -74.5 && longitude < -73) {
-    return "newyork";
-  } else if (latitude > 27.63 && latitude < 28.26 && longitude > -82.7 && longitude < -82.0) {
-    return "tampa";
-  } else if (latitude > 42.19 && latitude < 42.48 && longitude > -71.27 && longitude < -70.85) {
-    return "boston";
-  }
-  return null;
-}
-
-var urlBus = function(type, region) {
-  urlSource = {
-    "stopsForLocations": {
-      "pugetsound": "api.pugetsound.onebusaway.org/api/where/stops-for-location.json?key=",
-      "newyork":
-      "bustime.mta.info/api/where/stops-for-location.json?key=",
-      "tampa":
-      "api.tampa.onebusaway.org/api/where/stops-for-location.json?key=",
-      "boston":
-      "realtime.mbta.com/developer/api/v2/stopsbylocation?api_key="
-    },
-    "routesForStops": {
-      "pugetsound":
-      "api.pugetsound.onebusaway.org/api/where/arrivals-and-departures-for-stop/",
-      "newyork":
-      "bustime.mta.info/api/siri/stop-monitoring.json?key=",
-      "tampa":
-      "api.tampa.onebusaway.org/api/where/arrivals-and-departures-for-stop/",
-      "boston":
-      "realtime.mbta.com/developer/api/v2/predictionsbystop?api_key="
-    }
-  }
-  return "http://" + urlSource[type][region]
-}
-
 var urlBusPugetSound = "http://api.pugetsound.onebusaway.org/api/where/arrival-and-departure-for-stop/";
 var urlBusTampa = "http://api.tampa.onebusaway.org/api/where/arrival-and-departure-for-stop/";
-
-var urlStopsForLocations = function(latitude, longitude) {
-  var region = geoRegion(latitude,longitude);
-  var radius = Settings.data()["searchRadius"] || 260;
-  var latlon = "&lat=" + latitude + "&lon=" + longitude;
-  if (arrayContains(["pugetsound","newyork","tampa"], region)) {
-    return urlBus("stopsForLocations", region) + KEY[region] + latlon + "&radius=" + radius;
-  } else if (region === "boston") {
-    return urlBus("stopsForLocations", region) + KEY[region] + latlon + "&format=json";
-  }
-  return null;
-}
-
-var urlRoutesForStops = function(latitude, longitude, busStopId) {
-  var region = geoRegion(latitude,longitude);
-  if (region === "pugetsound") {
-    return urlBus("routesForStops", region) + busStopId + ".json?key="+ KEY[region];
-  } else if (region === "newyork") {
-    return urlBus("routesForStops", region) + KEY[region] + "&OperatorRef=MTA" + "&MonitoringRef=" + busStopId;
-  } else if (region === "tampa") {
-    return encodeURI(urlBus("routesForStops", region) + busStopId + ".json?key="+ KEY[region]);
-  } else if (region === "boston") {
-    return urlBus("routesForStops", region) + KEY[region] + "&stop=" + busStopId + "&format=json";
-  }
-  return null;
-}
 
 var urlRoutesForBus = function(latitude, longitude, busDetail) {
   var region = geoRegion(latitude,longitude);
