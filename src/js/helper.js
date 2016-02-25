@@ -1,5 +1,5 @@
 // store all the helper methods
-
+var Settings = require('settings');
 var Helper = {}
 
 Helper.arrayContains = function(array, item) {

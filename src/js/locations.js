@@ -58,8 +58,7 @@ Locations.urlBus = function(type, region) {
   return "http://" + urlSource[type][region]
 }
 
-Locations.urlRoutesForStops = function(coords, busStopId) {
-  var region = Locations.geoRegion(coords);
+Locations.urlRoutesForStops = function(region, busStopId) {
   if (region === "pugetsound") {
     return Locations.urlBus("routesForStops", region) + busStopId + ".json?key="+ KEY[region];
   } else if (region === "newyork") {
