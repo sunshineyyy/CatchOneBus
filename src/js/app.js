@@ -129,7 +129,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
             },
             function(data) {
               // Update the Menu's first section
-              menuItems = topListData(data,region);
+              menuItems = parseStopListData(data,region);
               if (favoriteData.length > 0) {
                 menuItems.unshift({
                   title: "Favorite stops"
@@ -224,6 +224,22 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
           // showBusTrackingPage(latitude, longitude,parseBusRoutesData(busData).busDetails[e.itemIndex]);
         }
       });
+
+      var refresh_times = 0
+      setInterval(function() { ajax(
+        {
+          url: busStopURL,
+          type:'json'
+        },
+        function(updatedBusData) {
+          // Update the bus time list
+          detailRoutes.items(0, parseBusRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
+          console.log('autoRefresh ' + refresh_times + ' for ' + busStopId);
+          refresh_times += 1;
+        },
+        function(busDataError) {
+          console.log('Download failed: ' + busDataError);
+        }) }, 30000)
 
       // Register for 'tap' events
       detailRoutes.on('accelTap', function(e) {
