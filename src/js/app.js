@@ -10,6 +10,7 @@ var Tests = require('tests');
 var Locations = require('locations');
 var Helper = require('helper');
 var Save = require('save');
+var Detail = require('detail');
 
 // Set a configurable with the open callback
 Settings.config(
@@ -37,9 +38,9 @@ function locationSuccess(position) {
     "lat": position.coords.latitude,
     "lon": position.coords.longitude
   }
-  // coords = Tests.cases['Boston test 2'];
+  // coords = Tests.cases['Boston2'];
   // coords = Tests.cases['Seattle'];
-  // coords = Tests.cases['New York'];
+  coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
@@ -118,6 +119,20 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
             var busStopDirection = menuItems[e.itemIndex].busStopdirection;
             showBusRoutesMenu(busStopId, busStopName, busStopDirection, region);
           }
+        }); // end resultsMenu.on
+        
+        // Add an action for Long click
+        resultsMenu.on('longSelect', function(e) {
+          console.log("long click received");
+          console.log(JSON.stringify(menuItems[e.itemIndex]));
+          var busStopName = menuItems[e.itemIndex].stopName;
+          var busStopId = menuItems[e.itemIndex].busStopId;
+          var busStopDirection = menuItems[e.itemIndex].busStopdirection;
+          if (busStopDirection) {
+            busStopDirection = '\n(' + busStopDirection + ' bound)';
+          }
+          var routes = menuItems[e.itemIndex].routes;
+          Detail.add('Stop Detail', busStopName + busStopDirection + '\n' + 'Stop ID: ' + busStopId.split("_").pop(-1)).show();
         }); // end resultsMenu.on
 
         // Register for 'tap' events
@@ -277,17 +292,10 @@ var showBusDetailPage = function(e, region) {
     stopNameDescription = ', at ' + e.section.title + '.';
   }
   if (detail[1]) {
-    busDetailPage = new UI.Card({
-      title: e.item.title,
-      body:  detail[0] + ', to' + detail[1] + stopNameDescription
-    });
+    Detail.add(e.item.title, detail[0] + ', to' + detail[1] + stopNameDescription).show();
   } else {
-    busDetailPage = new UI.Card({
-      title: e.item.title.split(" away")[0],
-      body:  'to ' + detail[0] + stopNameDescription
-    });
+    Detail.add(e.item.title.split(" away")[0], 'to ' + detail[0] + stopNameDescription).show();
   }
-  busDetailPage.show();
 }
 
 var showBusTrackingPage = function(latitude, longitude, busDetail) {
@@ -749,7 +757,8 @@ var parseStopListData = function(data, region) {
         subtitle: direction + routesName,
         busStopId: busStopId,
         stopName: stopName,
-        busStopdirection: real_direction
+        busStopdirection: real_direction,
+        routes: routes.toString()
       });
     } else {
       console.log('title is blank');
