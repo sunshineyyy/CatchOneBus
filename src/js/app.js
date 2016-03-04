@@ -40,7 +40,7 @@ function locationSuccess(position) {
   }
   // coords = Tests.cases['Boston2'];
   // coords = Tests.cases['Seattle'];
-  coords = Tests.cases['New York'];
+  // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
