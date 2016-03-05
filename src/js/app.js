@@ -131,7 +131,6 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
           if (busStopDirection) {
             busStopDirection = '\n(' + busStopDirection + ' bound)';
           }
-          var routes = menuItems[e.itemIndex].routes;
           Detail.add('Stop Detail', busStopName + busStopDirection + '\n' + 'Stop ID: ' + busStopId.split("_").pop(-1)).show();
         }); // end resultsMenu.on
 
@@ -284,17 +283,18 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
 
 var showBusDetailPage = function(e, region) {
   var detail = e.item.subtitle.split(",");
-  var busDetailPage;
   var stopNameDescription; // string for describing at which station in the detail card
+  console.log("detail is " + detail)
   if (Helper.arrayContains(["pugetsound", "tampa", "newyork"], region)) {
-    stopNameDescription = ', at ' + e.section.title + ' bound.';
+    stopNameDescription = '\nAt:' + Helper.addSpaceBefore(e.section.title) + ' bound.';
   } else if (Helper.arrayContains(["boston"], region)) {
-    stopNameDescription = ', at ' + e.section.title + '.';
+    stopNameDescription = '\nAt:' + Helper.addSpaceBefore(e.section.title) + '.';
   }
   if (detail[1]) {
-    Detail.add(e.item.title, detail[0] + ', to' + detail[1] + stopNameDescription).show();
+    Detail.add(e.item.title, detail[0] + '\nTo:' + Helper.addSpaceBefore(detail[1]) + stopNameDescription).show();
+    console.log('reach detail[1]')
   } else {
-    Detail.add(e.item.title.split(" away")[0], 'to ' + detail[0] + stopNameDescription).show();
+    Detail.add(e.item.title, 'To:' + Helper.addSpaceBefore(detail[0]) + stopNameDescription).show();
   }
 }
 
@@ -440,6 +440,17 @@ var showFavoriteStops = function() {
   favoriteStopsPage.show();
   favoriteStopsPage.on('select', function(e) {
     showBusRoutesMenu(favoriteStopListData[e.itemIndex].stopId, favoriteStopListData[e.itemIndex].name, favoriteStopListData[e.itemIndex].direction, favoriteStopListData[e.itemIndex].region);
+  // favoriteStopsPage.hide();
+  });
+  favoriteStopsPage.on('longSelect', function(e) {
+    console.log("long click received");
+    var busStopName = favoriteStopListData[e.itemIndex].name;
+    var busStopId = favoriteStopListData[e.itemIndex].stopId;
+    var busStopDirection = favoriteStopListData[e.itemIndex].direction;
+    if (busStopDirection) {
+      busStopDirection = '\n(' + busStopDirection + ' bound)';
+    }
+    Detail.add('Stop Detail', busStopName + busStopDirection + '\n' + 'Stop ID: ' + busStopId.split("_").pop(-1)).show();
   // favoriteStopsPage.hide();
   });
 };

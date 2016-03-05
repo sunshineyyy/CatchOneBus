@@ -11,4 +11,12 @@ Helper.arrayContains = function(array, item) {
   return false;
 }
 
+Helper.addSpaceBefore = function(str) {
+  if (str[0] != " ") {
+    return " " + str;
+  } else {
+    return str;
+  }
+}
+
 module.exports = Helper;
