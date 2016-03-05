@@ -39,9 +39,9 @@ function locationSuccess(position) {
     "lat": position.coords.latitude,
     "lon": position.coords.longitude
   }
-  coords = Tests.cases['Boston2'];
+  // coords = Tests.cases['Boston2'];
   // coords = Tests.cases['Seattle'];
-  // coords = Tests.cases['New York'];
+  coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];
   var currentGeoRegion = Locations.geoRegion(coords);
