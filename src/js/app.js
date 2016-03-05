@@ -41,9 +41,9 @@ function locationSuccess(position) {
   }
   // coords = Tests.cases['Boston2'];
   // coords = Tests.cases['Seattle'];
-  coords = Tests.cases['New York'];
+  // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
-  // coords = Tests.cases['Portland'];
+  coords = Tests.cases['Portland'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
@@ -187,7 +187,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
         highlightTextColor: 'white',
         sections: [{
           title: busStopName + ' ' + busStopDirection,
-          items: parseBusRoutesData(busData, region, busStopId).busTimeItems
+          items: Parse.busRoutesData(busData, region, busStopId).busTimeItems
         }],
       });
 
@@ -239,7 +239,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
         } else {
           showBusDetailPage(e,region);
           // Pause development for bus alert system
-          // showBusTrackingPage(latitude, longitude,parseBusRoutesData(busData).busDetails[e.itemIndex]);
+          // showBusTrackingPage(latitude, longitude,Parse.busRoutesData(busData).busDetails[e.itemIndex]);
         }
       });
 
@@ -251,7 +251,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
         },
         function(updatedBusData) {
           // Update the bus time list
-          detailRoutes.items(0, parseBusRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
+          detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
           console.log('autoRefresh ' + refresh_times + ' for ' + busStopId);
           refresh_times += 1;
         },
@@ -268,9 +268,9 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
           },
           function(updatedBusData) {
             // Update the bus time list
-            detailRoutes.items(0, parseBusRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
-            console.log(JSON.stringify(parseBusRoutesData(updatedBusData, region, busStopId)["busTimeItems"]));
-            console.log(JSON.stringify(parseBusRoutesData(updatedBusData, region, busStopId)["busDetails"]));
+            detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
+            console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]));
+            console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busDetails"]));
           },
           function(busDataError) {
             console.log('Download failed: ' + busDataError);
@@ -536,160 +536,7 @@ var deleteFavoriteStop = function(busStopId, detailRoutes) {
   });
 };
 
-var parseBusRoutesData = function(busData, region, busStopId) {
-  // return JSON contains { "busTimeItems": list of bus routes short name and real arrival time, "busDetails": list of bus details }
-  var busTimeItems = [];
-  var busDetails = [];
-  console.log("reach parseBusRoutesData " + region);
-  var nowTime = parseInt(Date.now());
-  if (Helper.arrayContains(["pugetsound", "tampa"], region)) {
-    var arrivalsAndDepartures = busData.data.entry.arrivalsAndDepartures;
-    for (var i = 0; i < arrivalsAndDepartures.length; i++)  {
-      // Add to busTimeItems array
-      var routeShortName = arrivalsAndDepartures[i].routeShortName;
-      var predictedArrivalTime = parseInt(arrivalsAndDepartures[i].predictedArrivalTime);
-      var scheduledArrivalTime = parseInt(arrivalsAndDepartures[i].scheduledArrivalTime);
-      if(predictedArrivalTime === 0 || !predictedArrivalTime ) {
-        predictedArrivalTime = scheduledArrivalTime;
-      }
-      var predictedArrivalMinutes = parseTimeDisplay((predictedArrivalTime - nowTime)/1000);
-      var predictedArrivalInfo = '';
-      if (predictedArrivalMinutes > - 2) {
-        if (predictedArrivalMinutes > 0) {
-          predictedArrivalInfo = 'in ' + predictedArrivalMinutes + ' min';
-        } else if (predictedArrivalMinutes === 0) {
-          predictedArrivalInfo = 'Now';
-        } else {
-          predictedArrivalMinutes  = -predictedArrivalMinutes;
-          predictedArrivalInfo = predictedArrivalMinutes + ' min ago';
-        }
-        var delayOrEarly = Math.round((predictedArrivalTime - scheduledArrivalTime)/(1000*60));
 
-        var delayOrEarlyInfo = '';
-        if (delayOrEarly > 0) {
-          delayOrEarlyInfo = delayOrEarly + ' min delay';
-        } else if (delayOrEarly === 0) {
-          delayOrEarlyInfo = 'on time';
-        } else {
-          delayOrEarly  = -delayOrEarly;
-          delayOrEarlyInfo = delayOrEarly + ' min early';
-        }
-        console.log(routeShortName + ' ' + scheduledArrivalTime);
-
-        var tripHeadsign = arrivalsAndDepartures[i].tripHeadsign;
-
-        busTimeItems.push({
-          title: routeShortName + ', ' + predictedArrivalInfo,
-          subtitle: delayOrEarlyInfo + ', ' + tripHeadsign
-        });
-
-        busDetails.push(arrivalsAndDepartures[i]);
-      }
-    }
-  } else if (region === "newyork") {
-    // console.log(JSON.stringify(busData.Siri));
-    var arrivalsAndDepartures = busData.Siri.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit;
-    // console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0]));
-    // console.log(JSON.stringify(busData.Siri.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit));
-    // console.log(JSON.stringify(arrivalsAndDepartures));
-    for (var i = 0; i < arrivalsAndDepartures.length; i++)  {
-      var monitoredInfo = arrivalsAndDepartures[i].MonitoredVehicleJourney;
-      var routeShortName = monitoredInfo.PublishedLineName;
-      var predictedArrivalTime = new Date();
-      var predictedArrivalInfo = "";
-      var tripHeadsign = monitoredInfo.DestinationName;
-      if (monitoredInfo.MonitoredCall.hasOwnProperty("ExpectedArrivalTime")) {
-        predictedArrivalTime = new Date(monitoredInfo.MonitoredCall.ExpectedArrivalTime);
-        predictedArrivalInfo = ', in ' + parseTimeDisplay((predictedArrivalTime.getTime() - nowTime)/1000) + ' min';
-      } else {
-        predictedArrivalInfo = ', ' + monitoredInfo.MonitoredCall.Extensions.Distances.PresentableDistance;
-      }
-      busTimeItems.push({
-        title: routeShortName + predictedArrivalInfo,
-        subtitle: tripHeadsign
-      });
-    }
-  } else if (region === "boston") {
-    for (var i = 0; i < (busData.mode || []).length; i++) {
-      var mode = busData.mode[i];
-      for (var j = 0; j < mode.route.length; j++) {
-        var route = mode.route[j];
-        for (var k = 0; k < route.direction.length; k++) {
-          var direction = route.direction[k];
-          for (var l = 0; l < direction.trip.length; l++) {
-            var trip = direction.trip[l];
-            busTimeItems.push({
-                title: route.route_id + ', in ' + parseTimeDisplay(trip.pre_away) + ' min',
-                subtitle: trip.trip_headsign
-            });
-          }
-        }
-      }
-    }
-    busTimeItems = sortByKeyTime(busTimeItems, "title");
-  }
-
-  if(busTimeItems.length === 0) {
-    busTimeItems = [{
-      title: "No buses",
-      subtitle: "For the next 30 min"
-    }];
-    console.log('empty busTimeItems');
-  }
-
-  if (Save.favoriteStopListContains(busStopId)) {
-    busTimeItems.push({
-      title: "Remove from favorite",
-      subtitle: "Remove from favorite."
-    })
-  } else {
-    busTimeItems.push({
-      title: "Add to favorite",
-      subtitle: "Show this bus stop info in the starting page when around."
-    })
-  }
-
-  busTimeItems.push({
-    title: "Nearby stop list",
-    subtitle: "Go to the full stop list."
-  })
-
-  busTimeItems.push({
-    title: "Settings",
-    subtitle: "CatchOneBus settings"
-  })
-
-  var busRealTimeInfo = {
-    "busTimeItems": busTimeItems,
-    "busDetails": busDetails
-  };
-
-  // Finally return whole array
-  return busRealTimeInfo;
-}
-
-var parseTimeDisplay = function(timeInSec) {
-  var timeToDisplay = parseInt(timeInSec)/60.0;
-  if (timeToDisplay > 5) {
-    return timeToDisplay.toFixed(0);
-  } else {
-    timeToDisplay = timeToDisplay.toFixed(1);
-    if (timeToDisplay.split('.')[1] === "0") {
-      return timeToDisplay.split('.')[0];
-    } else {
-      return timeToDisplay;
-    }
-  }
-}
-
-var sortByKeyTime = function(array, key) {
-    return array.sort(function(a, b) {
-        var x = a[key].split(" in ")[1].split(" ")[0]; var y = b[key].split(" in ")[1].split(" ")[0];
-        x = parseInt(x);
-        y = parseInt(y);
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-}
 
 var parseDataList = function(data, region) {
   if (region === "boston") {

@@ -33,7 +33,7 @@ Locations.urlStops = function(coords) {
   } else if (region === "boston") {
     return Locations.urlBus("stopsForLocations", region) + KEY[region] + latlon + "&format=json";
   } else if (region === "portland") {
-    return Locations.urlBus("stopsForLocations", region) + coords.lat + "," + coords.lon + "&appID=" + KEY[region] + "&json=true&meters=" + radius;
+    return Locations.urlBus("stopsForLocations", region) + KEY[region] + "&ll=" + coords.lat + "," + coords.lon + "&json=true&meters=" + radius;
   }
   return null;
 }
@@ -49,7 +49,7 @@ Locations.urlBus = function(type, region) {
       "boston":
       "realtime.mbta.com/developer/api/v2/stopsbylocation?api_key=",
       "portland":
-      "developer.trimet.org/ws/V1/stops?ll="
+      "developer.trimet.org/ws/V1/stops?appID="
     },
     "routesForStops": {
       "pugetsound":
@@ -59,7 +59,9 @@ Locations.urlBus = function(type, region) {
       "tampa":
       "api.tampa.onebusaway.org/api/where/arrivals-and-departures-for-stop/",
       "boston":
-      "realtime.mbta.com/developer/api/v2/predictionsbystop?api_key="
+      "realtime.mbta.com/developer/api/v2/predictionsbystop?api_key=",
+      "portland":
+      "developer.trimet.org/ws/v2/arrivals?appID="
     }
   }
   return "http://" + urlSource[type][region]
@@ -74,6 +76,8 @@ Locations.urlRoutesForStops = function(region, busStopId) {
     return encodeURI(Locations.urlBus("routesForStops", region) + busStopId + ".json?key="+ KEY[region]);
   } else if (region === "boston") {
     return Locations.urlBus("routesForStops", region) + KEY[region] + "&stop=" + busStopId + "&format=json";
+  } else if (region === "portland") {
+    return Locations.urlBus("routesForStops", region) + KEY[region] + "&locIDs=" + busStopId + "&json=true";
   }
   return null;
 }
