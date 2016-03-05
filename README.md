@@ -10,5 +10,4 @@ CatchOneBus for Pebble, named one of the 15 Best Pebble Smartwatch Apps of 2015 
   * Boston Area ([MBTA](http://www.mbta.com/))
   * New York metropolitan area ([MTA](http://www.mta.info))
   * Tampa Area ([HART](http://www.gohart.org/))
-
-CatchOneBus is built with [Pebble.js](https://github.com/pebble/pebblejs)
+* CatchOneBus is built with [PEBBLE.JS](https://github.com/pebble/pebblejs)
