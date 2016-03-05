@@ -1,14 +1,14 @@
 var Settings = require('settings');
 var KEY = require('key');
-var Helper = require('helper')
+var Helper = require('helper');
 // Handle location services, providing URL, geoRegions
-var Locations = {}
+var Locations = {};
 
 // new geoRegion function based on coords
 Locations.geoRegion = function(coords) {
   var latitude = coords.lat;
   var longitude = coords.lon;
-  if (latitude > 45 && latitude < 49 && longitude > -124 && longitude < -120) {
+  if (latitude > 46.5 && latitude < 48.5 && longitude > -124 && longitude < -120) {
     return "pugetsound";
   } else if (latitude > 40 && latitude < 41 && longitude > -74.5 && longitude < -73) {
     return "newyork";
@@ -16,8 +16,11 @@ Locations.geoRegion = function(coords) {
     return "tampa";
   } else if (latitude > 42.19 && latitude < 42.48 && longitude > -71.27 && longitude < -70.85) {
     return "boston";
+  } else if (latitude > 45.28 && latitude < 45.65 && longitude > -123.13 && longitude < -122.32) {
+    return "portland";
+  } else {
+    return null;
   }
-  return null;
 }
 
 Locations.urlStops = function(coords) {
@@ -29,6 +32,8 @@ Locations.urlStops = function(coords) {
     return Locations.urlBus("stopsForLocations", region) + KEY[region] + latlon + "&radius=" + radius;
   } else if (region === "boston") {
     return Locations.urlBus("stopsForLocations", region) + KEY[region] + latlon + "&format=json";
+  } else if (region === "portland") {
+    return Locations.urlBus("stopsForLocations", region) + coords.lat + "," + coords.lon + "&appID=" + KEY[region] + "&json=true&meters=" + radius;
   }
   return null;
 }
@@ -42,7 +47,9 @@ Locations.urlBus = function(type, region) {
       "tampa":
       "api.tampa.onebusaway.org/api/where/stops-for-location.json?key=",
       "boston":
-      "realtime.mbta.com/developer/api/v2/stopsbylocation?api_key="
+      "realtime.mbta.com/developer/api/v2/stopsbylocation?api_key=",
+      "portland":
+      "developer.trimet.org/ws/V1/stops?ll="
     },
     "routesForStops": {
       "pugetsound":

@@ -11,6 +11,7 @@ var Locations = require('locations');
 var Helper = require('helper');
 var Save = require('save');
 var Detail = require('detail');
+var Parse = require('parse');
 
 // Set a configurable with the open callback
 Settings.config(
@@ -38,10 +39,11 @@ function locationSuccess(position) {
     "lat": position.coords.latitude,
     "lon": position.coords.longitude
   }
-  // coords = Tests.cases['Boston2'];
+  coords = Tests.cases['Boston2'];
   // coords = Tests.cases['Seattle'];
   // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
+  // coords = Tests.cases['Portland'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
@@ -72,6 +74,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
   if (typeof asyncMode === 'undefined') { asyncMode = true ; }
   if (typeof showMode === 'undefined') { showMode = true ; }
   console.log('asyncMode is ' + asyncMode)
+  console.log("urlStops is " + url);
   ajax(
     {
       url: url,
@@ -80,7 +83,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
     },
     function(data) {
       // Create an array of Menu items
-      var menuItems = parseStopListData(data,region);
+      var menuItems = Parse.stopListData(data,region);
       var favoriteData = Settings.data()["favorite_list"] || [];
       if (favoriteData.length > 0) {
         menuItems.unshift({
@@ -143,14 +146,14 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
             },
             function(data) {
               // Update the Menu's first section
-              menuItems = parseStopListData(data,region);
+              menuItems = Parse.stopListData(data,region);
               if (favoriteData.length > 0) {
                 menuItems.unshift({
                   title: "Favorite stops"
                 })
               }
               resultsMenu.items(0, menuItems);
-              console.log(JSON.stringify(parseStopListData(data,region)));
+              console.log(JSON.stringify(Parse.stopListData(data,region)));
             },
             function(error) {
               console.log('Download failed: ' + error);
@@ -167,6 +170,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
   // show bus routes for a given stop id
   if (typeof asyncMode === 'undefined') { asyncMode = true; }
   var busStopURL = Locations.urlRoutesForStops(region, busStopId);
+  console.log("busStopURL is " + busStopURL);
   // var region = Locations.geoRegion(coords);
   console.log(busStopURL);
   ajax(
@@ -687,18 +691,7 @@ var sortByKeyTime = function(array, key) {
     });
 }
 
-var busInfo = function(data, busId) {
-  // search through references to find bus name
-  var routes = data.data.references.routes
-  for (var i = 0; i < routes.length; i++) {
-    if (routes[i].id === busId) {
-      return routes[i];
-    }
-  }
-  return null;
-}
-
-var dataList = function(data, region) {
+var parseDataList = function(data, region) {
   if (region === "boston") {
     var list = [];
     for (var i = 0; i < data.stop.length; i++) {
@@ -718,83 +711,9 @@ var dataList = function(data, region) {
   }
 }
 
-var parseStopListData = function(data, region) {
-  var items = [];
-  var list = dataList(data, region);
-  console.log('list length is ' + list.length);
-  for (var i = 0; i < list.length; i++) {
-    // Always upper case the description string
-    var title = list[i].name || list[i].stop_name;
-    var stopName = list[i].name || list[i].stop_name;
-    console.log("");
-    var busStopId = list[i].id||list[i].stop_id;
-    var direction = list[i].direction || "";
-    var real_direction = list[i].direction || "";
-    var routes = [];
-    var routesName = "";
-    var parentStationName = ""
-    if (region === "pugetsound") {
-      var routeIds = list[i].routeIds;
-      for (var k = 0; k < routeIds.length; k++ ) {
-        var busDetail = busInfo(data, routeIds[k]);
-        routes.push(busDetail.shortName);
-      }
-    } else if (region === "newyork") {
-      var routeData = list[i].routes;
-      for (var k = 0; k < routeData.length; k++ ) {
-        routes.push(routeData[k].shortName);
-      }
-    } else if (region === "tampa") {
-      var routeData = list[i].routeIds;
-      for (var k = 0; k < routeData.length; k++ ) {
-        str = routeData[k]
-        routeName = str.slice(str.indexOf("Transit_") + 8, str.length);
-        routes.push(routeName);
-      }
-    } else if (region === "boston") {
-      if (title.indexOf("@") > -1) {
-        direction = title.substr(title.indexOf("@"));
-        title = title.replace(direction, "");
-      }
-    }
-    routesName = routes.toString();
-    if (routesName.length > 0) {
-      routesName = ', ' + routesName;
-    }
-    // Add to menu items array
-    if (title.length > 0) {
-      items.push({
-        title: title,
-        subtitle: direction + routesName,
-        busStopId: busStopId,
-        stopName: stopName,
-        busStopdirection: real_direction,
-        routes: routes.toString()
-      });
-    } else {
-      console.log('title is blank');
-    }
-  }
-
-  if (items.length === 0) {
-    items = [{
-      title: "No Bus Stop Around",
-      subtitle: "No bus stop in 260 m radius."
-    }];
-  }
-
-  items.push({
-    title: "Settings",
-    subtitle: "CatchOneBus settings"
-  })
-
-  // Finally return whole array
-  return items;
-};
-
 var busStopIds = function(data, region) {
   var stopIds = [];
-  var list = dataList(data, region);
+  var list = parseDataList(data, region);
   for (var i = 0; i < list.length; i++) {
     stopIds.push(list[i].id||list[i].stop_id);
   }
