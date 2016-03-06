@@ -43,11 +43,15 @@ Statics.aboutPage = new UI.Card({
 
 Statics.showVersionPage = function() {
   var versionInfos = [{
-    title: "1.90",
+    title: "2.0",
+    subtitle: "Add Portland support! Rewrite functions for processing transit api data into modules."
+  },
+  {
+    title: "1.9",
     subtitle: "Rewrite codes into modules, add Settings page, add autoRefresh for busRoutesMenu, fix bugs in Boston, new way of add and remove favorite stops."
   }, {
-    title: "1.80",
-    subtitle: "New welcome page, fix bugs in version 1.71 and 1.72."
+    title: "1.8",
+    subtitle: "New welcome page, fix bugs in version 1.7.1 and 1.7.2."
   }, {
     title: "1.7",
     subtitle: "Access to favorite stop real time bus info."
