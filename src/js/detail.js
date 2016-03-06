@@ -8,7 +8,7 @@ Detail.add = function(title_text, text) {
   // Create a background Rect
   var bgRect = new UI.Rect({
     position: new Vector2(0, 0),
-    size: new Vector2(144, 190),
+    size: new Vector2(144, 230),
     backgroundColor: 'white'
   });
   page.add(bgRect);
@@ -29,7 +29,7 @@ Detail.add = function(title_text, text) {
   page.add(title);
   var textfield = new UI.Text({
    position: new Vector2(3, 30),
-   size: new Vector2(136, 160),
+   size: new Vector2(136, 200),
    font: 'gothic-18-bold',
    text: text,
    textOverflow:'wrap',

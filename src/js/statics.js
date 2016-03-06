@@ -1,7 +1,8 @@
 var UI = require('ui');
 var Vector2 = require('vector2');
+var Detail = require('detail');
 // Create a nice waiting card for user while waiting
-var Statics = {}
+var Statics = {};
 
 Statics.welcomeWindow = new UI.Window({ fullscreen: true });
 // Create a background Rect
@@ -35,11 +36,7 @@ var image = new UI.Image({
 });
 Statics.welcomeWindow.add(image);
 
-Statics.aboutPage = new UI.Card({
-  title: "CatchOneBus",
-  body: "CatchOneBus is aimed to check your transit by a simple click on your wrist, app developed by Yaoyu Yang, logo by Dian Zhang. If you enjoy the app, please give us a like! Any feedbacks are welcome!",
-  scrollable: true
-});
+Statics.aboutPage = Detail.add("CatchOneBus", "CatchOneBus aims to check your transit by a simple click on your wrist, app developed by Yaoyu Yang and logo by Dian Zhang. Support us by making a donation to yaoyu@uw.edu or just give us a like!")
 
 Statics.showVersionPage = function() {
   var versionInfos = [{
@@ -87,13 +84,7 @@ Statics.showVersionPage = function() {
 }
 
 var showMenuDetailPage = function(e) {
-  detailPage = new UI.Card({
-    title: e.item.title,
-    body:  e.item.subtitle,
-    scrollable: true,
-    style: 'small'
-  });
-  detailPage.show();
+  Detail.add(e.item.title, e.item.subtitle).show()
 }
 
 module.exports = Statics;
