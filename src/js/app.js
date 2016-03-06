@@ -43,7 +43,7 @@ function locationSuccess(position) {
   // coords = Tests.cases['Seattle'];
   // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
-  coords = Tests.cases['Portland'];
+  // coords = Tests.cases['Portland'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
