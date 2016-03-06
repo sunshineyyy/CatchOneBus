@@ -75,7 +75,7 @@ Parse.stopDetail = function(data, stop, region) {
   }
   var stopDetailJSON = { 
     name: name, 
-    id: id, 
+    id: id,
     direction: direction, 
     title: title,
     subtitle: subtitle,
@@ -109,7 +109,7 @@ Parse.stopListData = function(data, region) {
       items.push({
         title: stopDetailInfo.title,
         subtitle: stopDetailInfo.subtitle,
-        busStopId: stopDetailInfo.id,
+        busStopId: stopDetailInfo.id.toString(),
         stopName: stopDetailInfo.name,
         busStopdirection: stopDetailInfo.direction,
         routes: stopDetailInfo.routes

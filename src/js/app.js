@@ -290,15 +290,17 @@ var showBusDetailPage = function(e, region) {
   var stopNameDescription; // string for describing at which station in the detail card
   console.log("detail is " + detail)
   if (Helper.arrayContains(["pugetsound", "tampa", "newyork"], region)) {
-    stopNameDescription = '\nAt:' + Helper.addSpaceBefore(e.section.title) + ' bound.';
+    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + ' bound.';
   } else if (Helper.arrayContains(["boston"], region)) {
-    stopNameDescription = '\nAt:' + Helper.addSpaceBefore(e.section.title) + '.';
+    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + '.';
+  } else if (Helper.arrayContains(["portland"], region)) {
+    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + '.';
   }
   if (detail[1]) {
-    Detail.add(e.item.title, detail[0] + '\nTo:' + Helper.addSpaceBefore(detail[1]) + stopNameDescription).show();
+    Detail.add(e.item.title, detail[0] + '\nTo:' + Helper.addSpaceBefore(detail[1]) + '\n' + stopNameDescription).show();
     console.log('reach detail[1]')
   } else {
-    Detail.add(e.item.title, 'To:' + Helper.addSpaceBefore(detail[0]) + stopNameDescription).show();
+    Detail.add(e.item.title, 'To:' + Helper.addSpaceBefore(detail[0]) + '\n' +stopNameDescription).show();
   }
 }
 
