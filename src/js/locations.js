@@ -25,7 +25,7 @@ Locations.geoRegion = function(coords) {
 
 Locations.urlStops = function(coords) {
   var region = Locations.geoRegion(coords);
-  console.log('reached Locations.urlStops! ' + region)
+  // console.log('reached Locations.urlStops! ' + region)
   var radius = Settings.data()["searchRadius"] || 260;
   var latlon = "&lat=" + coords.lat + "&lon=" + coords.lon;
   if (Helper.arrayContains(["pugetsound","newyork","tampa"], region)) {

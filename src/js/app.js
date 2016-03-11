@@ -17,10 +17,10 @@ var Parse = require('parse');
 Settings.config(
   { url: 'http://www.yaoyuyang.com/catchonebus/config/' },
   function(e) {
-    console.log('opening configurable');
+    // console.log('opening configurable');
   },
   function(e) {
-    console.log('closed configurable');
+    // console.log('closed configurable');
   }
 );
 
@@ -45,16 +45,16 @@ function locationSuccess(position) {
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];
   var currentGeoRegion = Locations.geoRegion(coords);
-  console.log(currentGeoRegion);
+  // console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
-  console.log("currentStopIds, " + currentStopIds);
+  // console.log("currentStopIds, " + currentStopIds);
   // Check if any favorite locations is nearby
   var favoriteData = Settings.data()["favorite_list"] || [];
   var favoritePageToShow = false;
   for (var i = 0; i < favoriteData.length; i++) {
-    console.log( i + "th favorite stop id is " + favoriteData[i].stopId);
+    // console.log( i + "th favorite stop id is " + favoriteData[i].stopId);
     if (Helper.arrayContains(currentStopIds, favoriteData[i].stopId)) {
-      console.log("matched favorite stop id is " + favoriteData[i].stopId);
+      // console.log("matched favorite stop id is " + favoriteData[i].stopId);
       showBusRoutesMenu(favoriteData[i].stopId, favoriteData[i].name, favoriteData[i].direction, currentGeoRegion);
       favoritePageToShow = true;
     }
@@ -73,7 +73,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
   var stopIdList = [];
   if (typeof asyncMode === 'undefined') { asyncMode = true ; }
   if (typeof showMode === 'undefined') { showMode = true ; }
-  console.log('asyncMode is ' + asyncMode)
+  // console.log('asyncMode is ' + asyncMode)
   console.log("urlStops is " + url);
   ajax(
     {
@@ -91,7 +91,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
         })
       }
       stopIdList = busStopIds(data,region);
-      console.log("Bus stop list " + url);
+      // console.log("Bus stop list " + url);
       if (showMode) {
         // Construct Menu to show to user
         var resultsMenu = new UI.Menu({
@@ -116,7 +116,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
           } else if (e.item.title === "Favorite stops") {
             showFavoriteStops(region);
           } else {
-            console.log(JSON.stringify(menuItems[e.itemIndex]));
+            // console.log(JSON.stringify(menuItems[e.itemIndex]));
             var busStopName = menuItems[e.itemIndex].stopName;
             var busStopId = menuItems[e.itemIndex].busStopId;
             var busStopDirection = menuItems[e.itemIndex].busStopdirection;
@@ -126,8 +126,8 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
         
         // Add an action for Long click
         resultsMenu.on('longSelect', function(e) {
-          console.log("long click received");
-          console.log(JSON.stringify(menuItems[e.itemIndex]));
+          // console.log("long click received");
+          // console.log(JSON.stringify(menuItems[e.itemIndex]));
           var busStopName = menuItems[e.itemIndex].stopName;
           var busStopId = menuItems[e.itemIndex].busStopId;
           var busStopDirection = menuItems[e.itemIndex].busStopdirection;
@@ -153,7 +153,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
                 })
               }
               resultsMenu.items(0, menuItems);
-              console.log(JSON.stringify(Parse.stopListData(data,region)));
+              // console.log(JSON.stringify(Parse.stopListData(data,region)));
             },
             function(error) {
               console.log('Download failed: ' + error);
@@ -204,7 +204,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
           for(var i = 0; i < stopList.length; i++) {
             stopIdList.push(stopList[i].stopId);
           }
-          console.log(stopIdList);
+          // console.log(stopIdList);
           if (Save.favoriteStopListContains(busStopId)) {
             showfavoriteConfirmPage(busStopId,busStopName,busStopDirection);
           } else {
@@ -269,8 +269,8 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
           function(updatedBusData) {
             // Update the bus time list
             detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
-            console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]));
-            console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busDetails"]));
+            // console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]));
+            // console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busDetails"]));
           },
           function(busDataError) {
             console.log('Download failed: ' + busDataError);
@@ -288,7 +288,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
 var showBusDetailPage = function(e, region) {
   var detail = e.item.subtitle.split(",");
   var stopNameDescription; // string for describing at which station in the detail card
-  console.log("detail is " + detail)
+  // console.log("detail is " + detail)
   if (Helper.arrayContains(["pugetsound", "tampa", "newyork"], region)) {
     stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + ' bound.';
   } else if (Helper.arrayContains(["boston"], region)) {
@@ -298,7 +298,7 @@ var showBusDetailPage = function(e, region) {
   }
   if (detail[1]) {
     Detail.add(e.item.title, detail[0] + '\nTo:' + Helper.addSpaceBefore(detail[1]) + '\n' + stopNameDescription).show();
-    console.log('reach detail[1]')
+    // console.log('reach detail[1]')
   } else {
     Detail.add(e.item.title, 'To:' + Helper.addSpaceBefore(detail[0]) + '\n' +stopNameDescription).show();
   }
@@ -449,7 +449,7 @@ var showFavoriteStops = function() {
   // favoriteStopsPage.hide();
   });
   favoriteStopsPage.on('longSelect', function(e) {
-    console.log("long click received");
+    // console.log("long click received");
     var busStopName = favoriteStopListData[e.itemIndex].name;
     var busStopId = favoriteStopListData[e.itemIndex].stopId;
     var busStopDirection = favoriteStopListData[e.itemIndex].direction;
@@ -566,7 +566,6 @@ var busStopIds = function(data, region) {
   for (var i = 0; i < list.length; i++) {
     stopIds.push(list[i].id||list[i].stop_id);
   }
-  console.log(stopIds);
   return stopIds;
 }
 

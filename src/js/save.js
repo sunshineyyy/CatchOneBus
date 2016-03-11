@@ -11,7 +11,7 @@ Save.favoriteStopListContains = function(busStopId) {
   for(var i = 0; i < stopList.length; i++) {
     stopIdList.push(stopList[i].stopId);
   }
-  console.log("Favorite Stop ID list " + stopIdList);
+  // console.log("Favorite Stop ID list " + stopIdList);
   return Helper.arrayContains(stopIdList,busStopId);
 }
 

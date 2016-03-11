@@ -24,7 +24,7 @@ Parse.stopList = function(data, region) {
 }
 
 Parse.stopDetail = function(data, stop, region) {
-  console.log("stop is " + JSON.stringify(stop));
+  // console.log("stop is " + JSON.stringify(stop));
   var name = "";
   var id = "";
   var direction = "";
@@ -102,7 +102,7 @@ Parse.stopListData = function(data, region) {
   console.log('list length is ' + list.length);
   for (var i = 0; i < list.length; i++) {
     // Always upper case the description string
-    console.log(JSON.stringify(Parse.stopDetail(list[i], region)));
+    // console.log(JSON.stringify(Parse.stopDetail(list[i], region)));
     stopDetailInfo = Parse.stopDetail(data, list[i], region)
     // Add to menu items array
     if (stopDetailInfo.title.length > 0) {
@@ -173,8 +173,7 @@ Parse.busRoutesData = function(busData, region, busStopId) {
           delayOrEarly  = -delayOrEarly;
           delayOrEarlyInfo = delayOrEarly + ' min early';
         }
-        console.log(routeShortName + ' ' + scheduledArrivalTime);
-
+        // console.log(routeShortName + ' ' + scheduledArrivalTime);
         var tripHeadsign = arrivalsAndDepartures[i].tripHeadsign;
 
         busTimeItems.push({
@@ -269,7 +268,7 @@ Parse.busRoutesData = function(busData, region, busStopId) {
           delayOrEarly  = -delayOrEarly;
           delayOrEarlyInfo = delayOrEarly + ' min early';
         }
-        console.log(routeShortName + ' ' + scheduledArrivalTime);
+        // console.log(routeShortName + ' ' + scheduledArrivalTime);
 
         var tripHeadsign = arrivalsAndDepartures[i].fullSign.split(" to ").slice(1).join();
 
