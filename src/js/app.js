@@ -90,8 +90,8 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
           title: "Favorite stops"
         })
       }
-      stopIdList = busStopIds(data,region);
-      // console.log("Bus stop list " + url);
+      stopIdList = Parse.stopIdsFromData(data,region);
+      console.log("stopIdList " + stopIdList);
       if (showMode) {
         // Construct Menu to show to user
         var resultsMenu = new UI.Menu({
@@ -537,37 +537,6 @@ var deleteFavoriteStop = function(busStopId, detailRoutes) {
     }
   });
 };
-
-
-
-var parseDataList = function(data, region) {
-  if (region === "boston") {
-    var list = [];
-    for (var i = 0; i < data.stop.length; i++) {
-      if (data.stop[i].parent_station_name.length === 0) {
-        list.push(data.stop[i]);
-      }
-    }
-    return list;
-  } else {
-    if (data.data) {
-      return data.data.list || data.data.stops;
-      console.log('data.data is available.')
-    } else {
-      return [];
-      console.log('data.data not available.')
-    }
-  }
-}
-
-var busStopIds = function(data, region) {
-  var stopIds = [];
-  var list = parseDataList(data, region);
-  for (var i = 0; i < list.length; i++) {
-    stopIds.push(list[i].id||list[i].stop_id);
-  }
-  return stopIds;
-}
 
 var urlBusPugetSound = "http://api.pugetsound.onebusaway.org/api/where/arrival-and-departure-for-stop/";
 var urlBusTampa = "http://api.tampa.onebusaway.org/api/where/arrival-and-departure-for-stop/";

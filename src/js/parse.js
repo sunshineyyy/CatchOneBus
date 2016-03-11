@@ -95,15 +95,34 @@ Parse.busNameInfo = function(data, busId) {
   return null;
 }
 
-// parse bus stop list items from transit api request
+// parse bus stop list items from transit api request to return a list of stop ids
+Parse.stopIdsFromData = function(data, region) {
+  var stopIds = [];
+  var list = Parse.stopList(data, region);
+  var stopDetailInfo = {};
+  console.log('reach stopIdsFromData');
+  for (var i = 0; i < list.length; i++) {
+    stopDetailInfo = Parse.stopDetail(data, list[i], region)
+    // Add to menu items array
+    if (stopDetailInfo.title.length > 0) {
+      stopIds.push(stopDetailInfo.id.toString());
+    } else {
+      console.log('title is blank');
+    }
+  }
+  return stopIds;
+}
+
+// parse bus stop list items from transit api request to return an array of json for menu display.
 Parse.stopListData = function(data, region) {
   var items = [];
   var list = Parse.stopList(data, region);
+  var stopDetailInfo = {};
   console.log('list length is ' + list.length);
   for (var i = 0; i < list.length; i++) {
     // Always upper case the description string
     // console.log(JSON.stringify(Parse.stopDetail(list[i], region)));
-    stopDetailInfo = Parse.stopDetail(data, list[i], region)
+    stopDetailInfo = Parse.stopDetail(data, list[i], region);
     // Add to menu items array
     if (stopDetailInfo.title.length > 0) {
       items.push({
@@ -133,7 +152,7 @@ Parse.stopListData = function(data, region) {
 
   // Finally return whole array
   return items;
-};
+}
 
 Parse.busRoutesData = function(busData, region, busStopId) {
   // return JSON contains { "busTimeItems": list of bus routes short name and real arrival time, "busDetails": list of bus details }
