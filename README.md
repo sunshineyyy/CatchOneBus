@@ -1,4 +1,5 @@
 # CatchOneBus
+[![Build Status](https://travis-ci.org/sunshineyyy/CatchOneBus.svg?branch=master)](https://travis-ci.org/sunshineyyy/CatchOneBus)
 CatchOneBus for Pebble, named one of the 15 Best Pebble Smartwatch Apps of 2015 by [PC Magazine](http://www.pcmag.com/article2/0,2817,2430329,00.asp), will show you real time bus arrival info nearby and provide smart personalized bus arrival info display.
 
 [![](http://pblweb.com/badge/55331752ac075102f30000a7/black/medium)](https://apps.getpebble.com/applications/55331752ac075102f30000a7)
