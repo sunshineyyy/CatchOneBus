@@ -67,12 +67,11 @@ Parse.stopDetail = function(data, stop, region) {
     direction = stop.dir;
     title = stop.desc;
   } else if (region === "vancouver") {
-    name = stop.Name;
+    name = stop.Name.trim();
     id = stop.StopNo;
-    title = stop.Name;
-    direction = stop.BayNo.trim();
+    title = stop.Name.trim();
     routes = stop.Routes;
-    subtitle = direction + ', ' + routes;
+    subtitle = routes;
   }
   // common parsing for name, id and direction
   if (Helper.arrayContains(["pugetsound","newyork","tampa"], region)) {
@@ -165,10 +164,9 @@ Parse.stopListData = function(data, region) {
 }
 
 Parse.busRoutesData = function(busData, region, busStopId) {
-  // return JSON contains { "busTimeItems": list of bus routes short name and real arrival time, "busDetails": list of bus details }
+  // return JSON contains "busTimeItems": list of bus routes short name and real arrival time
   var busTimeItems = [];
-  var busDetails = [];
-  console.log("reach parseBusRoutesData " + region);
+  // console.log("reach parseBusRoutesData " + region + " " + JSON.stringify(busData));
   var nowTime = parseInt(Date.now());
   if (Helper.arrayContains(["pugetsound", "tampa"], region)) {
     var arrivalsAndDepartures = busData.data.entry.arrivalsAndDepartures;
@@ -209,8 +207,6 @@ Parse.busRoutesData = function(busData, region, busStopId) {
           title: routeShortName + ', ' + predictedArrivalInfo,
           subtitle: delayOrEarlyInfo + ', ' + tripHeadsign
         });
-
-        busDetails.push(arrivalsAndDepartures[i]);
       }
     }
   } else if (region === "newyork") {
@@ -305,10 +301,37 @@ Parse.busRoutesData = function(busData, region, busStopId) {
           title: routeShortName + ', ' + predictedArrivalInfo,
           subtitle: delayOrEarlyInfo + ', ' + tripHeadsign
         });
-
-        busDetails.push(arrivalsAndDepartures[i]);
       }
     }
+  } else if (region === "vancouver") {
+    // return a list of bus number, arrival time, delay info, direction
+    var busArrivalList = [];
+    for (var i = 0; i < busData.length; i++) {
+      var busNumber = busData[i].RouteNo;
+      console.log(busNumber);
+      for (var j = 0; j < busData[i].Schedules.length; j++) {
+        // find out if delay or on time
+        console.log(JSON.stringify(busData[i].Schedules));
+        var delayOrEarlyInfoMap = {
+          "*": "scheduled",
+          "-": "delay",
+          "+": "early",
+          " ": "on time"
+        };
+        var predictedArrivalMinutes = busData[i].Schedules[j].ExpectedCountdown;
+        var delayOrEarlyInfo = delayOrEarlyInfoMap[busData[i].Schedules[j].ScheduleStatus];
+        var destination = busData[i].Schedules[j].Destination;
+        busTimeItems.push({
+          busId: busNumber,
+          predictedArrivalMinutes: predictedArrivalMinutes,
+          delayOrEarlyInfo: delayOrEarlyInfo,
+          destination: destination,
+          title: busNumber + ", in " + predictedArrivalMinutes + ' min',
+          subtitle: delayOrEarlyInfo + ", to " + destination
+        });
+      }
+    }
+    busTimeItems = Parse.sortByKeyTime(busTimeItems, "title");
   }
 
   if(busTimeItems.length === 0) {
@@ -341,13 +364,8 @@ Parse.busRoutesData = function(busData, region, busStopId) {
     subtitle: "CatchOneBus settings"
   })
 
-  var busRealTimeInfo = {
-    "busTimeItems": busTimeItems,
-    "busDetails": busDetails
-  };
-
-  // Finally return whole array
-  return busRealTimeInfo;
+  // Return whole array
+  return busTimeItems;
 }
 
 Parse.timeDisplay = function(timeInSec) {

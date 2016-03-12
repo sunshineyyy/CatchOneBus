@@ -10,6 +10,10 @@ Statics.aboutPage = Detail.add("CatchOneBus", "CatchOneBus aims to check your tr
 
 Statics.showVersionPage = function() {
   var versionInfos = [{
+    title: "2.2",
+    subtitle: "Add Vancouver support. Move stopIdList to Parse."
+  },
+  {
     title: "2.1",
     subtitle: "Add Pebble Round support. Upgraded to SDK 3.10."
   },

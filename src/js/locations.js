@@ -67,7 +67,9 @@ Locations.urlBus = function(type, region) {
       "boston":
       "realtime.mbta.com/developer/api/v2/predictionsbystop?api_key=",
       "portland":
-      "developer.trimet.org/ws/v2/arrivals?appID="
+      "developer.trimet.org/ws/v2/arrivals?appID=",
+      "vancouver":
+      "api.translink.ca/rttiapi/v1/stops/"
     }
   }
   return "http://" + urlSource[type][region]
@@ -84,6 +86,8 @@ Locations.urlRoutesForStops = function(region, busStopId) {
     return Locations.urlBus("routesForStops", region) + KEY[region] + "&stop=" + busStopId + "&format=json";
   } else if (region === "portland") {
     return Locations.urlBus("routesForStops", region) + KEY[region] + "&locIDs=" + busStopId + "&json=true";
+  } else if (region === "vancouver") {
+    return Locations.urlBus("routesForStops", region) + busStopId + "/estimates?apikey=" + KEY[region] + "&count=3&timeframe=60";
   }
   return null;
 }

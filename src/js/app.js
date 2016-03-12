@@ -44,7 +44,7 @@ function locationSuccess(position) {
   // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];
-  coords = Tests.cases['Vancouver'];
+  // coords = Tests.cases['Vancouver'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
@@ -85,7 +85,7 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
     },
     function(data) {
       // Create an array of Menu items
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
       var menuItems = Parse.stopListData(data,region);
       var favoriteData = Settings.data()["favorite_list"] || [];
       if (favoriteData.length > 0) {
@@ -180,6 +180,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
     {
       url: busStopURL,
       type: 'json',
+      headers: { accept:'application/JSON' },
       async: asyncMode
     },
     function(busData) {
@@ -190,7 +191,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
         highlightTextColor: 'white',
         sections: [{
           title: busStopName + ' ' + busStopDirection,
-          items: Parse.busRoutesData(busData, region, busStopId).busTimeItems
+          items: Parse.busRoutesData(busData, region, busStopId)
         }],
       });
 
@@ -250,11 +251,12 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
       setInterval(function() { ajax(
         {
           url: busStopURL,
+          headers: { accept:'application/JSON' },
           type:'json'
         },
         function(updatedBusData) {
           // Update the bus time list
-          detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
+          detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId));
           console.log('autoRefresh ' + refresh_times + ' for ' + busStopId);
           refresh_times += 1;
         },
@@ -271,7 +273,7 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
           },
           function(updatedBusData) {
             // Update the bus time list
-            detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]);
+            detailRoutes.items(0, Parse.busRoutesData(updatedBusData, region, busStopId));
             // console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busTimeItems"]));
             // console.log(JSON.stringify(Parse.busRoutesData(updatedBusData, region, busStopId)["busDetails"]));
           },
@@ -290,15 +292,8 @@ var showBusRoutesMenu = function(busStopId, busStopName, busStopDirection, regio
 
 var showBusDetailPage = function(e, region) {
   var detail = e.item.subtitle.split(",");
-  var stopNameDescription; // string for describing at which station in the detail card
-  // console.log("detail is " + detail)
-  if (Helper.arrayContains(["pugetsound", "tampa", "newyork"], region)) {
-    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + ' bound.';
-  } else if (Helper.arrayContains(["boston"], region)) {
-    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + '.';
-  } else if (Helper.arrayContains(["portland"], region)) {
-    stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title) + '.';
-  }
+  // string for describing at which station in the detail card
+  var stopNameDescription = 'At:' + Helper.addSpaceBefore(e.section.title)
   if (detail[1]) {
     Detail.add(e.item.title, detail[0] + '\nTo:' + Helper.addSpaceBefore(detail[1]) + '\n' + stopNameDescription).show();
     // console.log('reach detail[1]')
