@@ -5,6 +5,7 @@ Tests.cases = {
   "Tampa": { "lat": 28.0029, "lon": -82.4666 },
   "Boston": { "lat": 42.3601, "lon": -71.0589 },
   "Boston2": { "lat": 42.348714, "lon": -71.083212 },
-  "Portland": { "lat": 45.5200, "lon": -122.6819 }
+  "Portland": { "lat": 45.5200, "lon": -122.6819 },
+  "Vancouver": { "lat": 49.187706, "lon": -122.850060 }
 };
 module.exports = Tests;

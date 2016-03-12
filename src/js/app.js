@@ -44,8 +44,9 @@ function locationSuccess(position) {
   // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];
+  coords = Tests.cases['Vancouver'];
   var currentGeoRegion = Locations.geoRegion(coords);
-  // console.log(currentGeoRegion);
+  console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
   // console.log("currentStopIds, " + currentStopIds);
   // Check if any favorite locations is nearby
@@ -79,10 +80,12 @@ var showStopListMenu = function(coords,asyncMode,showMode) {
     {
       url: url,
       type:'json',
+      headers: { accept:'application/JSON' },
       async: asyncMode
     },
     function(data) {
       // Create an array of Menu items
+      console.log(JSON.stringify(data));
       var menuItems = Parse.stopListData(data,region);
       var favoriteData = Settings.data()["favorite_list"] || [];
       if (favoriteData.length > 0) {

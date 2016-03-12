@@ -19,6 +19,8 @@ Parse.stopList = function(data, region) {
     }
   } else if (region === "portland") {
     list = data.resultSet.location;
+  } else if (region === "vancouver") {
+    list = data;
   }
   return list;
 }
@@ -64,6 +66,13 @@ Parse.stopDetail = function(data, stop, region) {
     id = stop.locid;
     direction = stop.dir;
     title = stop.desc;
+  } else if (region === "vancouver") {
+    name = stop.Name;
+    id = stop.StopNo;
+    title = stop.Name;
+    direction = stop.BayNo.trim();
+    routes = stop.Routes;
+    subtitle = direction + ', ' + routes;
   }
   // common parsing for name, id and direction
   if (Helper.arrayContains(["pugetsound","newyork","tampa"], region)) {
@@ -100,9 +109,10 @@ Parse.stopIdsFromData = function(data, region) {
   var stopIds = [];
   var list = Parse.stopList(data, region);
   var stopDetailInfo = {};
-  console.log('reach stopIdsFromData');
+  // console.log('reach stopIdsFromData ' + JSON.stringify(list));
   for (var i = 0; i < list.length; i++) {
     stopDetailInfo = Parse.stopDetail(data, list[i], region)
+    console.log('stopDetailInfo ' + i + ' ' + JSON.stringify(stopDetailInfo));
     // Add to menu items array
     if (stopDetailInfo.title.length > 0) {
       stopIds.push(stopDetailInfo.id.toString());

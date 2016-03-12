@@ -18,6 +18,8 @@ Locations.geoRegion = function(coords) {
     return "boston";
   } else if (latitude > 45.28 && latitude < 45.65 && longitude > -123.13 && longitude < -122.32) {
     return "portland";
+  } else if (latitude > 48.99 && latitude < 49.48 && longitude > -123.43 && longitude < -122.42) {
+    return "vancouver";
   } else {
     return null;
   }
@@ -34,6 +36,8 @@ Locations.urlStops = function(coords) {
     return Locations.urlBus("stopsForLocations", region) + KEY[region] + latlon + "&format=json";
   } else if (region === "portland") {
     return Locations.urlBus("stopsForLocations", region) + KEY[region] + "&ll=" + coords.lat + "," + coords.lon + "&json=true&meters=" + radius;
+  } else if (region === "vancouver") {
+    return Locations.urlBus("stopsForLocations", region) + KEY[region] + "&lat=" + coords.lat + "&long=" + coords.lon + "&radius=" + radius;
   }
   return null;
 }
@@ -49,7 +53,9 @@ Locations.urlBus = function(type, region) {
       "boston":
       "realtime.mbta.com/developer/api/v2/stopsbylocation?api_key=",
       "portland":
-      "developer.trimet.org/ws/V1/stops?appID="
+      "developer.trimet.org/ws/V1/stops?appID=",
+      "vancouver":
+      "api.translink.ca/rttiapi/v1/stops?apikey="
     },
     "routesForStops": {
       "pugetsound":
