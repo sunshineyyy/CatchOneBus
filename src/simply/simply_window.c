@@ -130,7 +130,7 @@ static void prv_update_layer_placement(SimplyWindow *self, GRect *frame_out) {
       frame.size.h -=
           PBL_IF_ROUND_ELSE(self->status_bar_insets_bottom, false) ? STATUS_BAR_LAYER_HEIGHT * 2 :
                                                                      STATUS_BAR_LAYER_HEIGHT;
-      if (has_action_bar) {
+      if (PBL_IF_RECT_ELSE(has_action_bar, false)) {
         status_frame.size.w -= ACTION_BAR_WIDTH;
       }
       layer_set_frame(status_bar_base_layer, status_frame);
@@ -172,10 +172,6 @@ void simply_window_set_status_bar(SimplyWindow *self, bool use_status_bar) {
 void simply_window_set_background_color(SimplyWindow *self, GColor8 background_color) {
   self->background_color = background_color;
   window_set_background_color(self->window, gcolor8_get_or(background_color, GColorBlack));
-  if (self->status_bar_layer) {
-    status_bar_layer_set_colors(self->status_bar_layer, background_color,
-                               gcolor_legible_over(background_color));
-  }
 }
 
 void simply_window_set_status_bar_colors(SimplyWindow *self, GColor8 background_color,

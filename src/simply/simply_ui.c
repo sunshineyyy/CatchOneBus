@@ -31,6 +31,7 @@ enum ClearIndex {
   ClearIndex_Action = 0,
   ClearIndex_Text,
   ClearIndex_Image,
+  ClearIndex_Style,
 };
 
 enum StyleIndex {
@@ -41,6 +42,8 @@ enum StyleIndex {
   StyleIndex_Large,
   StyleIndexCount,
 };
+
+#define StyleIndex_Default StyleIndex_ClassicLarge
 
 static const SimplyStyle STYLES[StyleIndexCount] = {
   [StyleIndex_ClassicSmall] = {
@@ -125,6 +128,9 @@ void simply_ui_clear(SimplyUi *self, uint32_t clear_mask) {
   }
   if (clear_mask & (1 << ClearIndex_Image)) {
     memset(self->ui_layer.imagefields, 0, sizeof(self->ui_layer.imagefields));
+  }
+  if (clear_mask & (1 << ClearIndex_Style)) {
+    simply_ui_set_style(self, StyleIndex_Default);
   }
 }
 
@@ -292,8 +298,11 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
       body_rect.size = body_size;
       const int new_height = cursor.y + margin_bottom;
       frame.size.h = MAX(window_frame.size.h, new_height);
-      layer_set_frame(layer, frame);
-      scroll_layer_set_content_size(self->window.scroll_layer, frame.size);
+      GRect original_frame = layer_get_frame(layer);
+      if (!grect_equal(&frame, &original_frame)) {
+        layer_set_frame(layer, frame);
+        scroll_layer_set_content_size(self->window.scroll_layer, frame.size);
+      }
     } else if (!self->ui_layer.custom_body_font && body_size.h > body_rect.size.h) {
       body_font = fonts_get_system_font(FONT_KEY_GOTHIC_18);
     }
@@ -383,7 +392,7 @@ static void window_load(Window *window) {
   scroll_layer_add_child(self->window.scroll_layer, layer);
   self->window.use_scroll_layer = true;
 
-  simply_ui_set_style(self, 1);
+  simply_ui_set_style(self, StyleIndex_Default);
 }
 
 static void window_appear(Window *window) {
