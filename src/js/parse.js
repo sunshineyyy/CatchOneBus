@@ -40,10 +40,20 @@ Parse.stopDetail = function(data, stop, region) {
       var busDetail = Parse.busNameInfo(data, routeIds[k]);
       routes.push(busDetail.shortName);
     }
+    title = stop.name;
+    if (title.indexOf("&") > -1) {
+      subtitle = title.substr(title.indexOf("&"));
+      title = title.replace(subtitle, "");
+    }
   } else if (region === "newyork") {
     var routeData = stop.routes;
     for (var k = 0; k < routeData.length; k++ ) {
       routes.push(routeData[k].shortName);
+    }
+    title = stop.name;
+    if (title.indexOf("/") > -1) {
+      subtitle = title.substr(title.indexOf("/"));
+      title = title.replace(subtitle, "");
     }
   } else if (region === "tampa") {
     var routeData = stop.routeIds;
@@ -51,6 +61,11 @@ Parse.stopDetail = function(data, stop, region) {
       str = routeData[k]
       routeName = str.slice(str.indexOf("Transit_") + 8, str.length);
       routes.push(routeName);
+    }
+    title = stop.name;
+    if (title.indexOf("@") > -1) {
+      subtitle = title.substr(title.indexOf("@"));
+      title = title.replace(subtitle, "");
     }
   } else if (region === "boston") {
     name = stop.stop_name;
@@ -66,20 +81,47 @@ Parse.stopDetail = function(data, stop, region) {
     id = stop.locid;
     direction = stop.dir;
     title = stop.desc;
+    if (title.indexOf("&") > -1) {
+      subtitle = title.substr(title.indexOf("&"));
+      title = title.replace(subtitle, "");
+    } else if (title.indexOf("/") > -1) {
+      subtitle = title.substr(title.indexOf("/"));
+      title = title.replace(subtitle, "");
+    }
   } else if (region === "vancouver") {
     name = stop.Name.trim();
     id = stop.StopNo;
     title = stop.Name.trim();
     routes = stop.Routes;
-    subtitle = routes;
+    if (title.indexOf("STN") > -1) {
+      subtitle = title.substr(title.indexOf("STN"));
+      title = title.replace(subtitle, "");
+    } else if (title.indexOf(" AT ") > -1) {
+      subtitle = title.substr(title.indexOf("AT"));
+      title = title.replace(subtitle, "");
+    } else if (title.indexOf("FS") > -1) {
+      subtitle = title.substr(title.indexOf("FS"));
+      title = title.replace(subtitle, "");
+    } else if (title.indexOf("NS") > -1) {
+      subtitle = title.substr(title.indexOf("NS"));
+      title = title.replace(subtitle, "");
+    }
+    if (subtitle === "") {
+      subtitle = routes;
+    } else if ( routes != "" ) {
+      subtitle = subtitle + ", " + routes;
+    }
   }
   // common parsing for name, id and direction
   if (Helper.arrayContains(["pugetsound","newyork","tampa"], region)) {
     name = stop.name;
     id = stop.id;
     direction = stop.direction;
-    title = stop.name;
-    subtitle = direction + ', ' + routes.toString()
+    subtitle = subtitle + ', ' + direction;
+    // add routes to the subtitle
+    // if (routes.toString().length > 0) {
+    //   subtitle = subtitle + ', ' + routes.toString()
+    // }
   }
   var stopDetailJSON = { 
     name: name, 
@@ -87,7 +129,7 @@ Parse.stopDetail = function(data, stop, region) {
     direction: direction, 
     title: title,
     subtitle: subtitle,
-    routes: routes.toString() 
+    routes: routes.toString()
   };
   return stopDetailJSON;
 }

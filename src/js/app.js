@@ -31,6 +31,7 @@ navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
 
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
+  Detail.add('Location Error', "Sorry, we can not determine your location. Make sure turn on location services for Pebble Time app on your phone.").show();
 }
 
 // When location request succeeds
@@ -45,6 +46,7 @@ function locationSuccess(position) {
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];
   // coords = Tests.cases['Vancouver'];
+  // coords = Tests.cases['Vancouver2'];
   var currentGeoRegion = Locations.geoRegion(coords);
   console.log(currentGeoRegion);
   var currentStopIds = showStopListMenu(coords, false, false);
