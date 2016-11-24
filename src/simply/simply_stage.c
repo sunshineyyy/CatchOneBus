@@ -339,7 +339,10 @@ static void layer_update_callback(Layer *layer, GContext *ctx) {
   if (self->window.is_scrollable) {
     frame.origin = GPointZero;
     layer_set_frame(layer, frame);
-    scroll_layer_set_content_size(self->window.scroll_layer, frame.size);
+    const GSize content_size = scroll_layer_get_content_size(self->window.scroll_layer);
+    if (!gsize_equal(&frame.size, &content_size)) {
+      scroll_layer_set_content_size(self->window.scroll_layer, frame.size);
+    }
   }
 }
 
@@ -505,6 +508,9 @@ static void window_load(Window *window) {
   SimplyStage * const self = window_get_user_data(window);
 
   simply_window_load(&self->window);
+
+  // Stage does not yet support text flow
+  scroll_layer_set_paging(self->window.scroll_layer, false);
 
   Layer * const window_layer = window_get_root_layer(window);
   const GRect frame = { .size = layer_get_frame(window_layer).size };
