@@ -8,7 +8,7 @@
   "resources": {
     "media": [
       {
-        "file": "images/menu_icon.png",
+        "file": "images/menu-icon-25x25.png",
         "menuIcon": true,
         "name": "IMAGE_MENU_ICON",
         "type": "png"
@@ -39,7 +39,7 @@
   ],
   "uuid": "775e3188-b4f2-4e4b-836a-e02080705ddf",
   "versionCode": 1,
-  "versionLabel": "2.3",
+  "versionLabel": "2.4",
   "watchapp": {
     "watchface": false
   }

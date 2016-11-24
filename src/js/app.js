@@ -41,7 +41,7 @@ function locationSuccess(position) {
     "lon": position.coords.longitude
   }
   // coords = Tests.cases['Boston2'];
-  // coords = Tests.cases['Seattle'];
+  coords = Tests.cases['Seattle'];
   // coords = Tests.cases['New York'];
   // coords = Tests.cases['Tampa'];
   // coords = Tests.cases['Portland'];

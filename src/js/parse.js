@@ -51,10 +51,11 @@ Parse.stopDetail = function(data, stop, region) {
       routes.push(routeData[k].shortName);
     }
     title = stop.name;
-    if (title.indexOf("/") > -1) {
-      subtitle = title.substr(title.indexOf("/"));
-      title = title.replace(subtitle, "");
-    }
+    // if (title.indexOf("/") > -1) {
+    //   subtitle = title.substr(title.indexOf("/"));
+    //   title = title.replace(subtitle, "");
+    // }
+    // add routes to the subtitle
   } else if (region === "tampa") {
     var routeData = stop.routeIds;
     for (var k = 0; k < routeData.length; k++ ) {
@@ -117,11 +118,14 @@ Parse.stopDetail = function(data, stop, region) {
     name = stop.name;
     id = stop.id;
     direction = stop.direction;
-    subtitle = subtitle + ', ' + direction;
-    // add routes to the subtitle
-    // if (routes.toString().length > 0) {
-    //   subtitle = subtitle + ', ' + routes.toString()
-    // }
+    if (subtitle.length > 0) {
+      subtitle = subtitle + ', '
+    }
+    routesToShow = routes.toString();
+    if (routesToShow.length > 0) {
+      routesToShow = ', ' + routesToShow;
+    }
+    subtitle = subtitle + direction + routesToShow;
   }
   var stopDetailJSON = { 
     name: name, 

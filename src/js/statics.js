@@ -10,6 +10,10 @@ Statics.aboutPage = Detail.add("CatchOneBus", "CatchOneBus aims to check your tr
 
 Statics.showVersionPage = function() {
   var versionInfos = [{
+    title: "2.4",
+    subtitle: "Add bus route number in subtitle."
+  },
+  {
     title: "2.3",
     subtitle: "Add overflow of stop name to subtitle."
   },
